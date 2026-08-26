@@ -1,0 +1,201 @@
+{
+  "build": "2026.07.25 CU3",
+  "targets": [
+    {
+      "id": "chief",
+      "name": "Master Chief",
+      "group": "tmlh",
+      "chunk": "2e29b20bc2cee08400000002",
+      "container": "pakchunk0-Windows",
+      "status": "confirmed",
+      "fields": [
+        {
+          "key": "shield_vitality",
+          "off": 40713,
+          "type": "f32",
+          "stock": 70
+        },
+        {
+          "key": "body_vitality",
+          "off": 40693,
+          "type": "f32",
+          "stock": 45
+        },
+        {
+          "key": "shield_delay",
+          "off": 41883,
+          "type": "f32",
+          "stock": 6
+        },
+        {
+          "key": "shield_time",
+          "off": 41891,
+          "type": "f32",
+          "stock": 3
+        },
+        {
+          "key": "body_delay",
+          "off": 41499,
+          "type": "f32",
+          "stock": 4
+        },
+        {
+          "key": "body_time",
+          "off": 41507,
+          "type": "f32",
+          "stock": 20
+        }
+      ]
+    },
+    {
+      "id": "assault_rifle",
+      "name": "Assault rifle",
+      "group": "paew",
+      "chunk": "422244d93c8d5f7300000002",
+      "container": "pakchunk0-Windows",
+      "status": "confirmed",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 30137,
+          "type": "u16",
+          "stock": 60
+        },
+        {
+          "key": "total_max",
+          "off": 30135,
+          "type": "u16",
+          "stock": 600
+        },
+        {
+          "key": "initial",
+          "off": 30133,
+          "type": "u16",
+          "stock": 300
+        },
+        {
+          "key": "inventory_max",
+          "off": 30139,
+          "type": "u16",
+          "stock": 540,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 30141,
+          "type": "u16",
+          "stock": 60,
+          "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "off": 30809,
+          "type": "f32",
+          "stock": 15,
+          "mirror": 30813
+        },
+        {
+          "key": "spread",
+          "off": 30925,
+          "type": "f32",
+          "stock": 0.0610865,
+          "mirror": 30929
+        }
+      ]
+    },
+    {
+      "id": "smg",
+      "name": "SMG",
+      "group": "paew",
+      "chunk": "d62feebbebfd7eb000000002",
+      "container": "pakchunk0-Windows",
+      "status": "confirmed",
+      "note": "Chunk id taken from a community SMG mod container, not from a stock extraction.",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 30024,
+          "type": "u16",
+          "stock": 60
+        },
+        {
+          "key": "total_max",
+          "off": 30022,
+          "type": "u16",
+          "stock": 420
+        },
+        {
+          "key": "initial",
+          "off": 30020,
+          "type": "u16",
+          "stock": 300
+        },
+        {
+          "key": "inventory_max",
+          "off": 30026,
+          "type": "u16",
+          "stock": 360,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 30028,
+          "type": "u16",
+          "stock": 60,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "sentinel_beam",
+      "name": "Sentinel beam",
+      "group": "paew",
+      "chunk": "01786f24495b96f000000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "note": "The beam drains 'age' rather than ammo. Stock 0.0013 per round gives roughly 770 shots.",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "off": 30543,
+          "type": "f32",
+          "stock": 0.0013
+        },
+        {
+          "key": "age",
+          "off": 30539,
+          "type": "f32",
+          "stock": 0.0013
+        },
+        {
+          "key": "heat",
+          "off": 30531,
+          "type": "f32",
+          "stock": 0.0375
+        }
+      ]
+    }
+  ]
+}

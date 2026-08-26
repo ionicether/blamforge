@@ -1,0 +1,11 @@
+# no game files
+*.tag
+*.utoc
+*.ucas
+*.pak
+out/
+dist/
+mod/
+chunks/
+
+__pycache__/
