@@ -8,7 +8,7 @@ usage:
     python3 patch.py chief.tag out.tag --set shield_delay=0.5 --set shield_vitality=200
 
 offsets are in offsets.json. they're for whatever build i have installed
-right now (2026.07.25 CU3), no idea how stable they are across patches.
+right now (2026.08.11.1121610), no idea how stable they are across patches.
 it checks the stock value before writing so at least it'll fail loudly
 instead of corrupting something.
 """
