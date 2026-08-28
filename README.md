@@ -1,130 +1,146 @@
 # halo-ce-2026-tags
 
-Notes and a script for editing gameplay values in Halo: Campaign Evolved.
+Scripts for editing gameplay values in Halo: Campaign Evolved. Magazine sizes,
+shield strength, recharge timing, that sort of thing.
 
-Spent today working out where the numbers live. Got the assault rifle magazine
-changed and it works in game, so the approach is sound. Writing it down before
-I forget how any of it fits together.
+## what's mapped
 
-## what's going on
-
-The game is UE5 but the gameplay data is still Blam tags. Actual `blam` magic
-bytes at 0x3C, `weap`/`char`/`hlmt` group fourccs at 0x30 (stored backwards, so
-they show up as `paew` etc in a hex dump). Those tags are sitting inside
-Unreal's IoStore containers.
-
-Values are just ints and floats at fixed offsets once you've got the tag out.
-The whole problem is finding the offsets.
-
-## what i've got so far
-
-Working and tested in game:
+Tested in game:
 
 - assault rifle: magazine, reserve, starting ammo, RPM, spread
 - SMG: magazine, reserve, starting ammo
 - master chief: shields, health, recharge delays and times
 
-Offsets look right but haven't played it:
+Offsets check out but I haven't played them:
 
 - sentinel beam: battery drain, heat per shot
+- battle rifle, DMR, spike rifle, shotgun, needler, sniper rifle, rocket
+  launcher, grenade launcher, fuel rod cannon, concussion rifle: magazine,
+  reserve, starting ammo
 
-All in `offsets.json`. `python3 patch.py --list` prints them.
+`python3 patch.py --list` prints the lot with offsets.
 
-## getting a tag out
+Not done: plasma weapons, energy sword, gravity hammer. Those have no magazine
+block because they run off a battery like the sentinel beam. Different fields,
+haven't looked yet.
+
+## what's going on
+
+UE5 game, but the gameplay data is still Blam tags. `blam` magic at 0x3C, group
+fourcc at 0x30 stored backwards so `weap` shows up as `paew`. Those tags are
+packed inside Unreal's IoStore containers.
+
+Once a tag's out, the values are ints and floats at fixed offsets and changing
+them is trivial. Working out which offset is the whole job.
+
+## getting the tags out
 
 ```
 retoc unpack-raw pakchunk0-Windows.utoc out/
 ```
 
-Two things about this. Don't extract into /tmp. Mine's a tmpfs and it filled
-up silently, gave me a partial extraction, and I spent an hour convinced half
-the game's tags didn't exist. Second, it's ~106,000 files, so put it somewhere
-with a few GB spare.
+Don't send that to /tmp. Mine's a tmpfs, it filled up, and I got a partial
+extraction with no error. Spent an hour convinced the Chief's model tag wasn't
+in the game before I noticed the file count was wrong. It's about 106,000 files
+so give it somewhere with a few GB.
 
-Files come out named by chunk id with no extension. To find one, grep by
-content:
+Chunks come out named by id with no extension. Ids are in `offsets.json`, or
+grep for one:
 
 ```
 cd out/chunks
 grep -l spartans *
 ```
 
-or just take the id out of `offsets.json`, they're listed there.
-
-## editing
+## changing values
 
 ```
 python3 patch.py out/chunks/422244d93c8d5f7300000002 --show
 python3 patch.py out/chunks/422244d93c8d5f7300000002 ar.tag --set magazine=90 --set total_max=900
 ```
 
-It checks every known field against the stock value before writing anything.
-If they don't match it bails, which catches you patching an already-patched
-file, or the game having updated.
+Every known field gets checked against its stock value before anything is
+written. If they don't line up it stops, which catches an already-patched file
+or a game update having moved things.
 
-Some fields are derived and it works them out for you. The ammo block has a
-reserve count that has to equal ceiling minus magazine or the game desyncs;
-found that out by setting them independently and getting a weapon that ate its
-own ammo.
+Some fields are worked out for you. The ammo block has a reserve count that has
+to equal ceiling minus magazine, and if it drifts the weapon starts eating its
+own ammo. Rounds-per-reload follows the magazine too, except on the shotgun,
+which loads one shell at a time and breaks if you change it.
 
-## putting it back
+## building a mod
 
 ```
-mkdir -p mod/chunks
-cp ar.tag mod/chunks/422244d93c8d5f7300000002
-cp out/manifest.json mod/
-retoc pack-raw mod dist/zzz_ar_P.utoc
+python3 mkmod.py ar.tag --chunk 422244d93c8d5f7300000002 --install "/path/to/Halo Campaign Evolved"
 ```
 
-That gives you a .utoc and .ucas. The engine also wants a .pak next to them.
-retoc doesn't make one, but every mod ships an identical 339 byte stub, so copy
-one from an existing mod folder and rename it to match.
+Packs the container, sorts out the .pak, drops all three files into their own
+folder under Content/Paks. `rm -rf` that folder to undo.
 
-Then all three go in their own folder under `Content/Paks/`. The `_P` suffix is
-what marks it as a patch container. Delete the folder to undo.
+The .pak thing is annoying. The engine won't mount a container without one
+sitting next to the .utoc and .ucas, and retoc doesn't generate them. But every
+mod ships one that's byte-identical, 339 bytes, so mkmod just finds one and
+copies it. Checked several and they're all the same file.
 
-## how i found the offsets
+## finding more
 
-Diffing. The tags carry their own field names as strings:
+Tags carry their own field names:
 
 ```
 strings -a -t d chunk | grep -i magazine
 ```
 
-which tells you what's in there but not where. For that, get two versions of
-the same tag (a stock one and a modded one) and diff:
+That tells you the tag has a field called "rounds loaded maximum". It does not
+tell you where the number is. Names live in a schema block near the front,
+values live somewhere else entirely.
+
+Diffing is how you bridge that. Two versions of the same tag, stock and modded,
+and the differing bytes are the values:
 
 ```
 cmp -l stock.tag modded.tag
 ```
 
-The differing bytes are the values. Read four bytes at each offset as a float
-and see if the number means anything.
+Read four bytes at each spot as a float and see if it means anything. 60 next
+to 600 is a magazine and its reserve. Two floats that come out as exactly 3.50
+and 5.00 degrees once converted from radians are a spread.
 
-The AR came from an existing community mod. Took maybe an hour. The Chief
-shield values came from a shield mod someone had already made, and that was
-about ten minutes, way faster than trying to find them cold.
+If someone's already modded the thing you want, diff their file. The Chief
+shield values took ten minutes that way. I'd spent hours getting nowhere on the
+same problem beforehand.
+
+`findmags.py` does the boring part for the magazine block, which has a
+recognisable shape (five u16s where inventory equals total minus magazine):
+
+```
+python3 findmags.py out/chunks
+```
+
+First version of that told me the sniper rifle held 1024 rounds. Turns out that
+arithmetic holds by accident in a few other structs, so there are extra checks
+in there now.
 
 ## todo
 
-- rest of the weapons. there's a structural fingerprint for the magazine block
-  (five u16s where inventory == total - magazine) so a scanner should find them
-- plasma weapons don't have magazines, they're battery like the sentinel beam.
-  different fields
-- some kind of UI. the CLI is fine for me but nobody else is going to use this
-- work out if the offsets survive a game patch
+- plasma weapons, they're battery-based like the sentinel beam
+- ammo pickups. there are equipment tags for assault rifle ammo, shotgun ammo
+  and rockets, and the amount they give you should be in there
+- some kind of UI. the CLI is fine for me, nobody else is going to touch it
+- find out whether the offsets survive a game patch
 
-## things that didn't work
+## didn't work
 
-Spent a while trying to get at damage resistance and the difficulty skulls.
-They're not in the tags at all. That stuff lives in UE5-side code and you'd
-need UE4SS to touch it. Also chased Flood weapon spawns through style tags,
-character tags and squad templates and never found where they're actually
-assigned.
+Wanted damage resistance and the difficulty skulls. Not in the tags at all,
+that's UE5-side and you'd need UE4SS.
 
-Also: cargo needs `--locked` when building retoc, otherwise it resolves a
-dependency to a version that doesn't build.
+Also chased Flood weapon spawns through style tags, character tags and squad
+templates. Squad templates do have loadouts with per-weapon spawn chances, and
+zeroing them changes nothing, so encounters must get their weapons somewhere
+else. Gave up on it.
 
 ## note
 
-Offsets only, no game files in here. Bring your own.
+cargo needs `--locked` when building retoc or a dependency resolves to a
+version that doesn't compile.
+
+Offsets only in here, no game files.

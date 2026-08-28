@@ -196,6 +196,532 @@
           "stock": 0.0375
         }
       ]
+    },
+    {
+      "id": "battle_rifle",
+      "name": "Battle rifle",
+      "group": "paew",
+      "chunk": "05d634a5f9a6407f00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29156,
+          "type": "u16",
+          "stock": 36
+        },
+        {
+          "key": "total_max",
+          "off": 29154,
+          "type": "u16",
+          "stock": 144
+        },
+        {
+          "key": "initial",
+          "off": 29152,
+          "type": "u16",
+          "stock": 108
+        },
+        {
+          "key": "inventory_max",
+          "off": 29158,
+          "type": "u16",
+          "stock": 108,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29160,
+          "type": "u16",
+          "stock": 36,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "dmr",
+      "name": "DMR",
+      "group": "paew",
+      "chunk": "40d788426a91127f00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29006,
+          "type": "u16",
+          "stock": 15
+        },
+        {
+          "key": "total_max",
+          "off": 29004,
+          "type": "u16",
+          "stock": 75
+        },
+        {
+          "key": "initial",
+          "off": 29002,
+          "type": "u16",
+          "stock": 45
+        },
+        {
+          "key": "inventory_max",
+          "off": 29008,
+          "type": "u16",
+          "stock": 60,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29010,
+          "type": "u16",
+          "stock": 15,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "spike_rifle",
+      "name": "Spike rifle",
+      "group": "paew",
+      "chunk": "4b5cf7afe1f9a4c400000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29354,
+          "type": "u16",
+          "stock": 40
+        },
+        {
+          "key": "total_max",
+          "off": 29352,
+          "type": "u16",
+          "stock": 160
+        },
+        {
+          "key": "initial",
+          "off": 29350,
+          "type": "u16",
+          "stock": 120
+        },
+        {
+          "key": "inventory_max",
+          "off": 29356,
+          "type": "u16",
+          "stock": 120,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29358,
+          "type": "u16",
+          "stock": 40,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "shotgun",
+      "name": "Shotgun",
+      "group": "paew",
+      "chunk": "6975f80ed2d133b900000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 30007,
+          "type": "u16",
+          "stock": 10
+        },
+        {
+          "key": "total_max",
+          "off": 30005,
+          "type": "u16",
+          "stock": 60
+        },
+        {
+          "key": "initial",
+          "off": 30003,
+          "type": "u16",
+          "stock": 30
+        },
+        {
+          "key": "inventory_max",
+          "off": 30009,
+          "type": "u16",
+          "stock": 50,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 30011,
+          "type": "u16",
+          "stock": 1,
+          "locked": true
+        }
+      ]
+    },
+    {
+      "id": "concussion_rifle",
+      "name": "Concussion rifle",
+      "group": "paew",
+      "chunk": "6dd6edddea854da500000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29393,
+          "type": "u16",
+          "stock": 6
+        },
+        {
+          "key": "total_max",
+          "off": 29391,
+          "type": "u16",
+          "stock": 30
+        },
+        {
+          "key": "initial",
+          "off": 29389,
+          "type": "u16",
+          "stock": 18
+        },
+        {
+          "key": "inventory_max",
+          "off": 29395,
+          "type": "u16",
+          "stock": 24,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29397,
+          "type": "u16",
+          "stock": 6,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "grenade_launcher",
+      "name": "Grenade launcher",
+      "group": "paew",
+      "chunk": "75136fd7925d973600000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29071,
+          "type": "u16",
+          "stock": 1
+        },
+        {
+          "key": "total_max",
+          "off": 29069,
+          "type": "u16",
+          "stock": 16
+        },
+        {
+          "key": "initial",
+          "off": 29067,
+          "type": "u16",
+          "stock": 8
+        },
+        {
+          "key": "inventory_max",
+          "off": 29073,
+          "type": "u16",
+          "stock": 15,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29075,
+          "type": "u16",
+          "stock": 1,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "fuel_rod_cannon",
+      "name": "Fuel rod cannon",
+      "group": "paew",
+      "chunk": "765d0d8e583f9aac00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29250,
+          "type": "u16",
+          "stock": 5
+        },
+        {
+          "key": "total_max",
+          "off": 29248,
+          "type": "u16",
+          "stock": 25
+        },
+        {
+          "key": "initial",
+          "off": 29246,
+          "type": "u16",
+          "stock": 15
+        },
+        {
+          "key": "inventory_max",
+          "off": 29252,
+          "type": "u16",
+          "stock": 20,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29254,
+          "type": "u16",
+          "stock": 5,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "needler",
+      "name": "Needler",
+      "group": "paew",
+      "chunk": "7cc2801de991768d00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29751,
+          "type": "u16",
+          "stock": 24
+        },
+        {
+          "key": "total_max",
+          "off": 29749,
+          "type": "u16",
+          "stock": 120
+        },
+        {
+          "key": "initial",
+          "off": 29747,
+          "type": "u16",
+          "stock": 96
+        },
+        {
+          "key": "inventory_max",
+          "off": 29753,
+          "type": "u16",
+          "stock": 96,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29755,
+          "type": "u16",
+          "stock": 24,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "rocket_launcher",
+      "name": "Rocket launcher",
+      "group": "paew",
+      "chunk": "7ea4e4563b5266a800000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29692,
+          "type": "u16",
+          "stock": 2
+        },
+        {
+          "key": "total_max",
+          "off": 29690,
+          "type": "u16",
+          "stock": 8
+        },
+        {
+          "key": "initial",
+          "off": 29688,
+          "type": "u16",
+          "stock": 4
+        },
+        {
+          "key": "inventory_max",
+          "off": 29694,
+          "type": "u16",
+          "stock": 6,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29696,
+          "type": "u16",
+          "stock": 2,
+          "derived": true
+        }
+      ]
+    },
+    {
+      "id": "sniper_rifle",
+      "name": "Sniper rifle",
+      "group": "paew",
+      "chunk": "9241c407d6ae5ce800000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "linked": [
+        {
+          "source": "total_max",
+          "minus": "magazine",
+          "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
+        }
+      ],
+      "fields": [
+        {
+          "key": "magazine",
+          "off": 29309,
+          "type": "u16",
+          "stock": 4
+        },
+        {
+          "key": "total_max",
+          "off": 29307,
+          "type": "u16",
+          "stock": 24
+        },
+        {
+          "key": "initial",
+          "off": 29305,
+          "type": "u16",
+          "stock": 12
+        },
+        {
+          "key": "inventory_max",
+          "off": 29311,
+          "type": "u16",
+          "stock": 20,
+          "derived": true
+        },
+        {
+          "key": "rounds_reloaded",
+          "off": 29313,
+          "type": "u16",
+          "stock": 4,
+          "derived": true
+        }
+      ]
     }
   ]
 }
