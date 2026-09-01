@@ -1,146 +1,121 @@
-# halo-ce-2026-tags
+# Blamforge
 
-Scripts for editing gameplay values in Halo: Campaign Evolved. Magazine sizes,
-shield strength, recharge timing, that sort of thing.
+Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast
+shields come back, sentinel beam battery.
 
-## what's mapped
+```
+python3 blamforge.py
+```
+
+Browser opens. Pick something, drag a slider, hit Install.
+
+This replaces the command line scripts that were in here before. Those worked
+but meant shuffling files between a terminal, a downloads folder and the game
+directory, which was tedious enough that I stopped using my own tool.
+
+## what's in it
 
 Tested in game:
 
+- master chief: shields, health, recharge delays and times
 - assault rifle: magazine, reserve, starting ammo, RPM, spread
 - SMG: magazine, reserve, starting ammo
-- master chief: shields, health, recharge delays and times
 
-Offsets check out but I haven't played them:
+Offsets check out, haven't played them:
 
-- sentinel beam: battery drain, heat per shot
+- sentinel beam: battery drain, heat
 - battle rifle, DMR, spike rifle, shotgun, needler, sniper rifle, rocket
   launcher, grenade launcher, fuel rod cannon, concussion rifle: magazine,
   reserve, starting ammo
 
-`python3 patch.py --list` prints the lot with offsets.
+No plasma weapons. They run on a battery rather than a magazine, same as the
+sentinel beam, and I haven't gone after those fields yet.
 
-Not done: plasma weapons, energy sword, gravity hammer. Those have no magazine
-block because they run off a battery like the sentinel beam. Different fields,
-haven't looked yet.
+## what you need
 
-## what's going on
+Python 3.8 or newer and [retoc](https://github.com/trumank/retoc) on your PATH.
+retoc does the actual container reading and writing, this is a front end on it.
 
-UE5 game, but the gameplay data is still Blam tags. `blam` magic at 0x3C, group
-fourcc at 0x30 stored backwards so `weap` shows up as `paew`. Those tags are
-packed inside Unreal's IoStore containers.
-
-Once a tag's out, the values are ints and floats at fixed offsets and changing
-them is trivial. Working out which offset is the whole job.
-
-## getting the tags out
+Prebuilt binaries are on retoc's releases page. Building works too but use
+`--locked`:
 
 ```
-retoc unpack-raw pakchunk0-Windows.utoc out/
+git clone https://github.com/trumank/retoc && cd retoc
+git checkout v0.1.5
+cargo build --release --locked
 ```
 
-Don't send that to /tmp. Mine's a tmpfs, it filled up, and I got a partial
-extraction with no error. Spent an hour convinced the Chief's model tag wasn't
-in the game before I noticed the file count was wrong. It's about 106,000 files
-so give it somewhere with a few GB.
+Without that flag cargo pulls a newer version of a dependency and the build
+fails.
 
-Chunks come out named by id with no extension. Ids are in `offsets.json`, or
-grep for one:
+Run `blamforge.py` and it should find your Steam install. If not it asks.
 
-```
-cd out/chunks
-grep -l spartans *
-```
+First launch unpacks the game container to get the tags out. Minute or two,
+only happens once. It reads from your install and writes only into new folders
+under Content/Paks.
 
-## changing values
+## how it works
 
-```
-python3 patch.py out/chunks/422244d93c8d5f7300000002 --show
-python3 patch.py out/chunks/422244d93c8d5f7300000002 ar.tag --set magazine=90 --set total_max=900
-```
+Gameplay values live in Blam tags packed inside Unreal IoStore containers.
+`blam` magic at 0x3C, group fourcc at 0x30 stored backwards. Once you've got a
+tag out the values are ints and floats at fixed offsets, so changing them is
+easy. Finding the offset is the work.
 
-Every known field gets checked against its stock value before anything is
-written. If they don't line up it stops, which catches an already-patched file
-or a game update having moved things.
+`registry.json` holds every offset along with the value it has in a clean
+install. Before writing anything Blamforge checks that value matches. If it
+doesn't, either there's a mod installed already, or the file's been patched, or
+the game updated and everything shifted. Either way it stops.
 
-Some fields are worked out for you. The ammo block has a reserve count that has
-to equal ceiling minus magazine, and if it drifts the weapon starts eating its
-own ammo. Rounds-per-reload follows the magazine too, except on the shotgun,
-which loads one shell at a time and breaks if you change it.
+Every mod gets its own folder under Content/Paks. Remove deletes the folder.
 
-## building a mod
+## adding things
 
-```
-python3 mkmod.py ar.tag --chunk 422244d93c8d5f7300000002 --install "/path/to/Halo Campaign Evolved"
-```
-
-Packs the container, sorts out the .pak, drops all three files into their own
-folder under Content/Paks. `rm -rf` that folder to undo.
-
-The .pak thing is annoying. The engine won't mount a container without one
-sitting next to the .utoc and .ucas, and retoc doesn't generate them. But every
-mod ships one that's byte-identical, 339 bytes, so mkmod just finds one and
-copies it. Checked several and they're all the same file.
-
-## finding more
-
-Tags carry their own field names:
+Tags carry their field names as plain strings:
 
 ```
 strings -a -t d chunk | grep -i magazine
 ```
 
-That tells you the tag has a field called "rounds loaded maximum". It does not
-tell you where the number is. Names live in a schema block near the front,
-values live somewhere else entirely.
-
-Diffing is how you bridge that. Two versions of the same tag, stock and modded,
-and the differing bytes are the values:
+That tells you what's in the tag, not where. For that, diff two versions of the
+same tag and look at the bytes that differ:
 
 ```
 cmp -l stock.tag modded.tag
 ```
 
-Read four bytes at each spot as a float and see if it means anything. 60 next
-to 600 is a magazine and its reserve. Two floats that come out as exactly 3.50
-and 5.00 degrees once converted from radians are a spread.
+Read four bytes at each offset as a float and see if the number means anything.
+60 next to 600 is a magazine and reserve. Diffing an existing mod is much
+faster than working blind, the Chief shield values came out of a community mod
+in about ten minutes.
 
-If someone's already modded the thing you want, diff their file. The Chief
-shield values took ten minutes that way. I'd spent hours getting nowhere on the
-same problem beforehand.
+Add an entry to `registry.json` and it turns up in the sidebar.
 
-`findmags.py` does the boring part for the magazine block, which has a
-recognisable shape (five u16s where inventory equals total minus magazine):
+## known rough edges
 
-```
-python3 findmags.py out/chunks
-```
+The slider ranges are the same for every weapon, which is wrong. A sniper rifle
+holds four rounds and its slider goes to 600. Works, but you can't land on
+anything useful.
 
-First version of that told me the sniper rifle held 1024 rounds. Turns out that
-arithmetic holds by accident in a few other structs, so there are extra checks
-in there now.
+Rounds per reload is editable and unlinked, so if you set a big magazine you
+have to remember to raise it too or the gun reloads a quarter of a clip.
 
-## todo
+## limits
 
-- plasma weapons, they're battery-based like the sentinel beam
-- ammo pickups. there are equipment tags for assault rifle ammo, shotgun ammo
-  and rockets, and the amount they give you should be in there
-- some kind of UI. the CLI is fine for me, nobody else is going to touch it
-- find out whether the offsets survive a game patch
+Offsets are for build 2026.08.11.1121610. A game update will move them and it'll
+refuse to patch rather than break anything.
 
-## didn't work
+Damage resistance, difficulty skulls and anything else in player traits are
+UE5-side, not in the tags at all. That needs
+[UE4SS](https://github.com/UE4SS-RE/RE-UE4SS).
 
-Wanted damage resistance and the difficulty skulls. Not in the tags at all,
-that's UE5-side and you'd need UE4SS.
-
-Also chased Flood weapon spawns through style tags, character tags and squad
-templates. Squad templates do have loadouts with per-weapon spawn chances, and
-zeroing them changes nothing, so encounters must get their weapons somewhere
-else. Gave up on it.
+Extracting containers yourself: don't do it into /tmp. Mine's a tmpfs, it
+filled up and truncated silently, and I spent an evening sure a tag wasn't in
+the game.
 
 ## note
 
-cargo needs `--locked` when building retoc or a dependency resolves to a
-version that doesn't compile.
+Offsets in here, no game data. Bring your own copy.
 
-Offsets only in here, no game files.
+Server binds to localhost and makes no outbound requests.
+
+retoc is [trumank's](https://github.com/trumank). MIT licensed.

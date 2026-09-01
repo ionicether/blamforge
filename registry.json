@@ -1,9 +1,11 @@
 {
+  "version": "0.3.0",
   "build": "2026.08.11.1121610",
   "targets": [
     {
       "id": "chief",
       "name": "Master Chief",
+      "subtitle": "Shields, health, and recovery timing",
       "group": "tmlh",
       "chunk": "2e29b20bc2cee08400000002",
       "container": "pakchunk0-Windows",
@@ -11,45 +13,91 @@
       "fields": [
         {
           "key": "shield_vitality",
+          "label": "Shield strength",
+          "help": "How much damage the shield absorbs before it breaks.",
           "off": 40713,
           "type": "f32",
-          "stock": 70
+          "stock": 70,
+          "min": 10,
+          "max": 7000,
+          "step": 10,
+          "unit": ""
         },
         {
           "key": "body_vitality",
+          "label": "Health",
+          "help": "Damage the body takes once shields are down.",
           "off": 40693,
           "type": "f32",
-          "stock": 45
+          "stock": 45,
+          "min": 5,
+          "max": 4500,
+          "step": 5,
+          "unit": ""
         },
         {
           "key": "shield_delay",
+          "label": "Shield recharge delay",
+          "help": "Quiet time before the shield starts refilling.",
           "off": 41883,
           "type": "f32",
-          "stock": 6
+          "stock": 6,
+          "min": 0.01,
+          "max": 10,
+          "step": 0.01,
+          "unit": "s"
         },
         {
           "key": "shield_time",
+          "label": "Shield recharge time",
+          "help": "How long a full refill takes once it starts.",
           "off": 41891,
           "type": "f32",
-          "stock": 3
+          "stock": 3,
+          "min": 0.05,
+          "max": 10,
+          "step": 0.05,
+          "unit": "s"
         },
         {
           "key": "body_delay",
+          "label": "Health recharge delay",
           "off": 41499,
           "type": "f32",
-          "stock": 4
+          "stock": 4,
+          "min": 0.01,
+          "max": 10,
+          "step": 0.01,
+          "unit": "s"
         },
         {
           "key": "body_time",
+          "label": "Health recharge time",
           "off": 41507,
           "type": "f32",
-          "stock": 20
+          "stock": 20,
+          "min": 0.05,
+          "max": 40,
+          "step": 0.05,
+          "unit": "s"
+        },
+        {
+          "key": "body_delay_2",
+          "label": "Health recharge delay (second section)",
+          "off": 46395,
+          "type": "f32",
+          "stock": 4,
+          "min": 0.01,
+          "max": 10,
+          "step": 0.01,
+          "unit": "s"
         }
       ]
     },
     {
       "id": "assault_rifle",
       "name": "Assault rifle",
+      "subtitle": "Magazine, reserve, rate of fire, spread",
       "group": "paew",
       "chunk": "422244d93c8d5f7300000002",
       "container": "pakchunk0-Windows",
@@ -59,33 +107,48 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
+          "help": "Rounds per clip.",
           "off": 30137,
           "type": "u16",
-          "stock": 60
+          "stock": 60,
+          "min": 1,
+          "max": 600,
+          "step": 1,
+          "unit": ""
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 30135,
           "type": "u16",
-          "stock": 600
+          "stock": 600,
+          "min": 1,
+          "max": 60000,
+          "step": 1,
+          "unit": ""
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 30133,
           "type": "u16",
-          "stock": 300
+          "stock": 300,
+          "min": 0,
+          "max": 60000,
+          "step": 1,
+          "unit": ""
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
+          "help": "Kept at reserve ceiling minus magazine. The game desyncs if this drifts.",
           "off": 30139,
           "type": "u16",
           "stock": 540,
@@ -93,30 +156,46 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 30141,
           "type": "u16",
           "stock": 60,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         },
         {
           "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "Rounds per second. 15 is 900 RPM.",
           "off": 30809,
           "type": "f32",
           "stock": 15,
-          "mirror": 30813
+          "mirror": 30813,
+          "min": 1,
+          "max": 60,
+          "step": 0.5,
+          "unit": "/s"
         },
         {
           "key": "spread",
+          "label": "Spread",
+          "help": "Cone of fire, in radians. Stock is 3.5 degrees.",
           "off": 30925,
           "type": "f32",
           "stock": 0.0610865,
-          "mirror": 30929
+          "mirror": 30929,
+          "min": 0,
+          "max": 0.35,
+          "step": 0.001,
+          "unit": " rad"
         }
       ]
     },
     {
       "id": "smg",
       "name": "SMG",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "d62feebbebfd7eb000000002",
       "container": "pakchunk0-Windows",
@@ -127,33 +206,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 30024,
           "type": "u16",
-          "stock": 60
+          "stock": 60,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 30022,
           "type": "u16",
-          "stock": 420
+          "stock": 420,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 30020,
           "type": "u16",
-          "stock": 300
+          "stock": 300,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 30026,
           "type": "u16",
           "stock": 360,
@@ -161,16 +249,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 30028,
           "type": "u16",
           "stock": 60,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "sentinel_beam",
       "name": "Sentinel beam",
+      "subtitle": "Battery drain and heat",
       "group": "paew",
       "chunk": "01786f24495b96f000000002",
       "container": "pakchunk0-Windows",
@@ -179,27 +271,46 @@
       "fields": [
         {
           "key": "campaign_age",
+          "label": "Battery drain (campaign)",
+          "help": "Age spent per shot. Lower lasts longer. Zero never depletes.",
           "off": 30543,
           "type": "f32",
-          "stock": 0.0013
+          "stock": 0.0013,
+          "min": 0,
+          "max": 0.0026,
+          "step": 1e-05,
+          "unit": ""
         },
         {
           "key": "age",
+          "label": "Battery drain",
+          "help": "The multiplayer counterpart. Set it to match.",
           "off": 30539,
           "type": "f32",
-          "stock": 0.0013
+          "stock": 0.0013,
+          "min": 0,
+          "max": 0.0026,
+          "step": 1e-05,
+          "unit": ""
         },
         {
           "key": "heat",
+          "label": "Heat per shot",
+          "help": "Zero to stop it venting.",
           "off": 30531,
           "type": "f32",
-          "stock": 0.0375
+          "stock": 0.0375,
+          "min": 0,
+          "max": 0.075,
+          "step": 0.0005,
+          "unit": ""
         }
       ]
     },
     {
       "id": "battle_rifle",
       "name": "Battle rifle",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "05d634a5f9a6407f00000002",
       "container": "pakchunk0-Windows",
@@ -209,33 +320,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29156,
           "type": "u16",
-          "stock": 36
+          "stock": 36,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29154,
           "type": "u16",
-          "stock": 144
+          "stock": 144,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29152,
           "type": "u16",
-          "stock": 108
+          "stock": 108,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29158,
           "type": "u16",
           "stock": 108,
@@ -243,16 +363,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29160,
           "type": "u16",
           "stock": 36,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "dmr",
       "name": "DMR",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "40d788426a91127f00000002",
       "container": "pakchunk0-Windows",
@@ -262,33 +386,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29006,
           "type": "u16",
-          "stock": 15
+          "stock": 15,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29004,
           "type": "u16",
-          "stock": 75
+          "stock": 75,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29002,
           "type": "u16",
-          "stock": 45
+          "stock": 45,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29008,
           "type": "u16",
           "stock": 60,
@@ -296,16 +429,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29010,
           "type": "u16",
           "stock": 15,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "spike_rifle",
       "name": "Spike rifle",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "4b5cf7afe1f9a4c400000002",
       "container": "pakchunk0-Windows",
@@ -315,33 +452,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29354,
           "type": "u16",
-          "stock": 40
+          "stock": 40,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29352,
           "type": "u16",
-          "stock": 160
+          "stock": 160,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29350,
           "type": "u16",
-          "stock": 120
+          "stock": 120,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29356,
           "type": "u16",
           "stock": 120,
@@ -349,16 +495,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29358,
           "type": "u16",
           "stock": 40,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "shotgun",
       "name": "Shotgun",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "6975f80ed2d133b900000002",
       "container": "pakchunk0-Windows",
@@ -373,24 +523,37 @@
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 30007,
           "type": "u16",
-          "stock": 10
+          "stock": 10,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 30005,
           "type": "u16",
-          "stock": 60
+          "stock": 60,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 30003,
           "type": "u16",
-          "stock": 30
+          "stock": 30,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 30009,
           "type": "u16",
           "stock": 50,
@@ -398,16 +561,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 30011,
           "type": "u16",
           "stock": 1,
-          "locked": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "concussion_rifle",
       "name": "Concussion rifle",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "6dd6edddea854da500000002",
       "container": "pakchunk0-Windows",
@@ -417,33 +584,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29393,
           "type": "u16",
-          "stock": 6
+          "stock": 6,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29391,
           "type": "u16",
-          "stock": 30
+          "stock": 30,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29389,
           "type": "u16",
-          "stock": 18
+          "stock": 18,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29395,
           "type": "u16",
           "stock": 24,
@@ -451,16 +627,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29397,
           "type": "u16",
           "stock": 6,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "grenade_launcher",
       "name": "Grenade launcher",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "75136fd7925d973600000002",
       "container": "pakchunk0-Windows",
@@ -470,33 +650,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29071,
           "type": "u16",
-          "stock": 1
+          "stock": 1,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29069,
           "type": "u16",
-          "stock": 16
+          "stock": 16,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29067,
           "type": "u16",
-          "stock": 8
+          "stock": 8,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29073,
           "type": "u16",
           "stock": 15,
@@ -504,16 +693,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29075,
           "type": "u16",
           "stock": 1,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "fuel_rod_cannon",
       "name": "Fuel rod cannon",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "765d0d8e583f9aac00000002",
       "container": "pakchunk0-Windows",
@@ -523,33 +716,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29250,
           "type": "u16",
-          "stock": 5
+          "stock": 5,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29248,
           "type": "u16",
-          "stock": 25
+          "stock": 25,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29246,
           "type": "u16",
-          "stock": 15
+          "stock": 15,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29252,
           "type": "u16",
           "stock": 20,
@@ -557,16 +759,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29254,
           "type": "u16",
           "stock": 5,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "needler",
       "name": "Needler",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "7cc2801de991768d00000002",
       "container": "pakchunk0-Windows",
@@ -576,33 +782,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29751,
           "type": "u16",
-          "stock": 24
+          "stock": 24,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29749,
           "type": "u16",
-          "stock": 120
+          "stock": 120,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29747,
           "type": "u16",
-          "stock": 96
+          "stock": 96,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29753,
           "type": "u16",
           "stock": 96,
@@ -610,16 +825,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29755,
           "type": "u16",
           "stock": 24,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "rocket_launcher",
       "name": "Rocket launcher",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "7ea4e4563b5266a800000002",
       "container": "pakchunk0-Windows",
@@ -629,33 +848,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29692,
           "type": "u16",
-          "stock": 2
+          "stock": 2,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29690,
           "type": "u16",
-          "stock": 8
+          "stock": 8,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29688,
           "type": "u16",
-          "stock": 4
+          "stock": 4,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29694,
           "type": "u16",
           "stock": 6,
@@ -663,16 +891,20 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29696,
           "type": "u16",
           "stock": 2,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     },
     {
       "id": "sniper_rifle",
       "name": "Sniper rifle",
+      "subtitle": "Magazine and reserve",
       "group": "paew",
       "chunk": "9241c407d6ae5ce800000002",
       "container": "pakchunk0-Windows",
@@ -682,33 +914,42 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
-        },
-        {
-          "source": "magazine",
-          "target": "rounds_reloaded"
         }
       ],
       "fields": [
         {
           "key": "magazine",
+          "label": "Magazine",
           "off": 29309,
           "type": "u16",
-          "stock": 4
+          "stock": 4,
+          "min": 1,
+          "max": 600,
+          "step": 1
         },
         {
           "key": "total_max",
+          "label": "Reserve ceiling",
           "off": 29307,
           "type": "u16",
-          "stock": 24
+          "stock": 24,
+          "min": 1,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "initial",
+          "label": "Starting ammo",
           "off": 29305,
           "type": "u16",
-          "stock": 12
+          "stock": 12,
+          "min": 0,
+          "max": 60000,
+          "step": 1
         },
         {
           "key": "inventory_max",
+          "label": "Reserve (derived)",
           "off": 29311,
           "type": "u16",
           "stock": 20,
@@ -716,10 +957,13 @@
         },
         {
           "key": "rounds_reloaded",
+          "label": "Rounds per reload",
           "off": 29313,
           "type": "u16",
           "stock": 4,
-          "derived": true
+          "min": 1,
+          "max": 200,
+          "step": 1
         }
       ]
     }
