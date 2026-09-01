@@ -1,11 +1,12 @@
-# no game files
+# Cached game data — never commit this
+.cache/
 *.tag
-*.utoc
 *.ucas
+*.utoc
 *.pak
-out/
-dist/
-mod/
-chunks/
+blamforge-*/
+
+__pycache__/
+.DS_Store
 
 __pycache__/
