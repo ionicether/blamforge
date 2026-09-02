@@ -21,7 +21,7 @@ Both put themselves on PATH. **Close PowerShell and open it again** afterwards o
 
 >If `winget` isn't recognised, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
 
->If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings, Apps, Advanced app settings, App execution aliases, turn off the `python.exe` and `python3.exe` entries.
+>If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings -> Apps -> Advanced app settings -> App execution aliases -> turn off the `python.exe` and `python3.exe` entries.
 
 Check retoc is found:
 
