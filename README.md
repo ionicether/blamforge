@@ -23,6 +23,14 @@ Both put themselves on PATH. **Close PowerShell and open it again** afterwards o
 
 >If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings, Apps, Advanced app settings, App execution aliases, turn off the `python.exe` and `python3.exe` entries.
 
+Check retoc is found:
+
+```
+retoc --version
+```
+
+If that errors, Blamforge will tell you the same thing when you start it.
+
 ### Linux
 
 Python is usually already there. For retoc:
@@ -40,7 +48,7 @@ The `find` is because the archive puts the binary in a subdirectory whose name c
 
 The [releases page](https://github.com/trumank/retoc/releases) has builds for other architectures if you need one.
 
-### Either way
+#### Or build it with cargo
 
 Building retoc from source works too, but use `--locked`:
 
@@ -50,15 +58,13 @@ git checkout v0.1.5
 cargo build --release --locked
 ```
 
-Without that flag, cargo pulls a newer version of one of its dependencies and the build falls over.
+Without that flag, cargo pulls a newer version of one of its dependencies which may break something.
 
 Check retoc is found:
 
 ```
 retoc --version
 ```
-
-If that errors, Blamforge will tell you the same thing when you start it.
 
 ## Running it
 
