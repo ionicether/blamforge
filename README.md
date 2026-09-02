@@ -4,11 +4,11 @@ Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast yo
 
 ## What you need
 
-Two things: Python, and a tool called [retoc](https://github.com/trumank/retoc) that does the actual reading and writing of the game's containers. Blamforge is a front end on top of retoc and does nothing without it.
+Two things: Python, and a tool called [retoc](https://github.com/trumank/retoc) that does the actual reading and writing of the game's containers. Blamforge is the offsets (which took a while to find) and a web UI to wrangle them with.
 
 ### Windows
 
-Open PowerShell and run these:
+Open PowerShell and run these:g
 
 ```
 winget install --id Python.Python.3 --source winget --accept-package-agreements --accept-source-agreements
@@ -18,6 +18,7 @@ powershell -ExecutionPolicy Bypass -c "irm https://github.com/trumank/retoc/rele
 Both put themselves on PATH. **Close PowerShell and open it again** afterwards or neither will be found.
 
 >If `winget` isn't recognised, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
+
 >If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings, Apps, Advanced app settings, App execution aliases, turn off the `python.exe` and `python3.exe` entries.
 
 ### Linux
