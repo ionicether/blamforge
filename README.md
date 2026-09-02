@@ -2,13 +2,15 @@
 
 Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast your shields come back, sentinel beam battery. Things you'd otherwise be changing with a hex editor.
 
+![Blamforge](docs/screenshot.png)
+
 ## What you need
 
 Two things: Python, and a tool called [retoc](https://github.com/trumank/retoc) that does the actual reading and writing of the game's containers. Blamforge is the offsets (which took a while to find) and a web UI to wrangle them with.
 
 ### Windows
 
-Open PowerShell and run these:g
+Open PowerShell and run these:
 
 ```
 winget install --id Python.Python.3 --source winget --accept-package-agreements --accept-source-agreements
