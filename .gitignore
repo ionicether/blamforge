@@ -1,12 +1,9 @@
-# Cached game data — never commit this
+# Cached game data, never commit this
 .cache/
 *.tag
 *.ucas
 *.utoc
 *.pak
 blamforge-*/
-
-__pycache__/
-.DS_Store
 
 __pycache__/

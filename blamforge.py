@@ -28,19 +28,42 @@ import time
 import urllib.parse
 import webbrowser
 
+APP = "blamforge"
+VERSION = "0.4.0"
+
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def retoc_path():
+    """Find retoc. PATH first, then next to this script.
+
+    The second case matters on Windows, where getting something onto PATH is
+    enough of a faff that people would rather drop the exe in the folder.
+    """
+    found = shutil.which("retoc")
+    if found:
+        return found
+    for name in ("retoc", "retoc.exe"):
+        p = os.path.join(HERE, name)
+        if os.path.isfile(p):
+            return p
+    return None
 CACHE = os.path.join(HERE, ".cache")
 CONTAINER = "pakchunk0-Windows.utoc"
 
 # The .pak that has to sit next to a .utoc/.ucas or the engine won't mount the
-# container at all. retoc doesn't make one, so we copy an existing one. Every
-# mod I've looked at ships the same 339 byte file.
+# container. retoc doesn't produce one, so we copy an existing one.
+#
+# 339 is the size when the mount point is "/", which is what retoc-built
+# containers want - they don't write a mount point of their own, so the pak's
+# is what gets used. Mods that ship real asset paths instead of raw chunk
+# overrides use "../../../" and come out at 347. Those aren't interchangeable
+# with these, hence matching on the exact size rather than just any .pak.
 PAK_SIZE = 339
 
 GAME_HINTS = [
     "~/.local/share/Steam/steamapps/common/Halo Campaign Evolved",
     "~/.steam/steam/steamapps/common/Halo Campaign Evolved",
-    "~/Library/Application Support/Steam/steamapps/common/Halo Campaign Evolved",
     "C:/Program Files (x86)/Steam/steamapps/common/Halo Campaign Evolved",
     "D:/SteamLibrary/steamapps/common/Halo Campaign Evolved",
     "E:/SteamLibrary/steamapps/common/Halo Campaign Evolved",
@@ -138,11 +161,44 @@ def verify(b, t):
 STATE = {"game": None, "paks": None, "status": "", "busy": False}
 
 
-def cache_ok():
+STAMP = "extracted.txt"
+
+
+def cache_state():
+    """Is the cache usable, and if not, why not.
+
+    Returns (ok, why). The registry grows over time, so a cache that was
+    complete last month can be missing chunks today. Without this you just
+    get bounced back to the setup screen with no idea what changed.
+
+    This deliberately doesn't compare game build numbers. There was a version
+    that did, and it was comparing the registry against a copy of itself, so
+    it fired when I edited registry.json and stayed quiet when the game
+    actually updated. The stock value check catches a real game update, by
+    noticing the bytes aren't where they should be.
+    """
     if not os.path.isdir(CACHE):
-        return False
-    return all(os.path.exists(os.path.join(CACHE, t["chunk"]))
-               for t in REG["targets"] if t.get("chunk"))
+        return False, "nothing extracted yet"
+
+    missing = [t["name"] for t in REG["targets"]
+               if t.get("chunk")
+               and not os.path.exists(os.path.join(CACHE, t["chunk"]))]
+    if missing:
+        if len(missing) > 3:
+            what = "%s and %d others" % (missing[0], len(missing) - 1)
+        else:
+            what = ", ".join(missing)
+        return False, "no tag cached for " + what
+
+    for f in ("manifest.json", "stub.pak"):
+        if not os.path.exists(os.path.join(CACHE, f)):
+            return False, f + " missing from the cache"
+
+    return True, ""
+
+
+def cache_ok():
+    return cache_state()[0]
 
 
 def extract(paks, progress):
@@ -158,7 +214,7 @@ def extract(paks, progress):
     try:
         progress("Unpacking the game container. This takes a minute or two "
                  "and only happens once.")
-        r = subprocess.run(["retoc", "unpack-raw",
+        r = subprocess.run([retoc_path(), "unpack-raw",
                             os.path.join(paks, CONTAINER), out],
                            capture_output=True, text=True)
         if r.returncode != 0:
@@ -181,8 +237,79 @@ def extract(paks, progress):
         stub = find_stub(paks)
         if stub:
             shutil.copy2(stub, os.path.join(CACHE, "stub.pak"))
+
+        with open(os.path.join(CACHE, STAMP), "w", encoding="utf-8") as fh:
+            fh.write("extracted %s\n" % time.strftime("%Y-%m-%d %H:%M"))
+            fh.write("registry %s\n" % REG.get("version", "?"))
+            fh.write("build %s\n" % REG.get("build", "?"))
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
+
+
+NOTE = "blamforge.txt"
+PREFIX = "bf_"
+
+
+def mod_dirs(target_id):
+    """Where this mod could be. New installs use the prefix; older ones
+    didn't, and there's no reason to strand them."""
+    return [os.path.join(STATE["paks"], PREFIX + target_id),
+            os.path.join(STATE["paks"], target_id)]
+
+
+def mod_dir(target_id):
+    """The one that's actually there, if any."""
+    for d in mod_dirs(target_id):
+        if os.path.isdir(d) and os.path.exists(os.path.join(d, NOTE)):
+            return d
+    return None
+
+
+def write_note(dest, t, values, patched):
+    """Leave a plain text record in the mod folder.
+
+    Mostly so that in six months you can look at a folder and know what's in
+    it.
+    """
+    lines = [
+        "%s %s" % (APP, VERSION),
+        t["name"],
+        "installed %s" % time.strftime("%Y-%m-%d %H:%M"),
+        "game build %s" % REG.get("build", "unknown"),
+        "chunk %s" % t["chunk"],
+        "",
+    ]
+    rows = []
+    for f in t["fields"]:
+        now = read_field(patched, f)
+        if f["type"] == "u16":
+            now, was = int(now), int(f["stock"])
+            same = now == was
+        else:
+            was = f["stock"]
+            # same tolerance the stock check uses, so a value that round
+            # trips through float32 doesn't read as a change
+            same = abs(now - was) <= max(1e-6, abs(was) * 1e-4)
+            now = round(now, 6)
+        if same:
+            continue
+        rows.append((f.get("label", f["key"]), was, now))
+
+    if rows:
+        width = max(len(r[0]) for r in rows)
+        for label, was, now in rows:
+            lines.append("%-*s  %s -> %s" % (width, label, was, now))
+    else:
+        lines.append("nothing changed from stock")
+
+    lines += [
+        "",
+        "Delete this whole folder to put it back the way it was, or run",
+        "uninstall.py to find and remove every folder with one of these in it.",
+        "",
+    ]
+    with open(os.path.join(dest, NOTE), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
 
 def install(target_id, values, progress):
@@ -220,7 +347,7 @@ def install(target_id, values, progress):
         utoc = os.path.join(dist, stem + ".utoc")
 
         progress("Packing the mod.")
-        r = subprocess.run(["retoc", "pack-raw", srcdir, utoc],
+        r = subprocess.run([retoc_path(), "pack-raw", srcdir, utoc],
                            capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError((r.stderr or "retoc pack-raw failed").strip())
@@ -232,19 +359,27 @@ def install(target_id, values, progress):
             raise RuntimeError("stub.pak missing from the cache; try Refresh")
         shutil.copy2(stub, os.path.join(dist, stem + ".pak"))
 
-        dest = os.path.join(STATE["paks"], name)
+        # if it's already installed under the old unprefixed name, take that
+        # folder out rather than leaving two containers fighting over the
+        # same chunk
+        old = mod_dir(name)
+        if old and os.path.basename(old) == name:
+            shutil.rmtree(old, ignore_errors=True)
+
+        dest = os.path.join(STATE["paks"], PREFIX + name)
         os.makedirs(dest, exist_ok=True)
         for ext in (".utoc", ".ucas", ".pak"):
             shutil.copy2(os.path.join(dist, stem + ext),
                          os.path.join(dest, stem + ext))
+        write_note(dest, t, values, b)
         return dest
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
 
 
 def uninstall(target_id):
-    d = os.path.join(STATE["paks"], TARGETS[target_id]["id"])
-    if os.path.isdir(d):
+    d = mod_dir(TARGETS[target_id]["id"])
+    if d:
         shutil.rmtree(d)
         return True
     return False
@@ -255,8 +390,7 @@ def installed_ids():
     if not STATE["paks"]:
         return out
     for t in REG["targets"]:
-        d = os.path.join(STATE["paks"], t["id"])
-        if os.path.isdir(d) and any(f.endswith(".utoc") for f in os.listdir(d)):
+        if mod_dir(t["id"]):
             out.append(t["id"])
     return out
 
@@ -282,14 +416,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
 
         if u.path == "/api/state":
+            ok, why = cache_state()
             return self._json({
                 "registry": REG,
                 "game": STATE["game"],
-                "ready": cache_ok(),
+                "ready": ok,
+                "stale": why,
                 "status": STATE["status"],
                 "busy": STATE["busy"],
                 "installed": installed_ids(),
-                "retoc": shutil.which("retoc") is not None,
+                "retoc": retoc_path() is not None,
             })
 
         if u.path == "/api/values":
@@ -376,7 +512,7 @@ def free_port(start=8777):
 
 
 def main():
-    if not shutil.which("retoc"):
+    if not retoc_path():
         print("retoc isn't on your PATH.")
         print("Get it from https://github.com/trumank/retoc. Blamforge needs")
         print("it to read and write the game's containers.\n")

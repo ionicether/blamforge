@@ -25,6 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15
 .masthead{border-bottom:1px solid var(--line);padding:22px 30px 18px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
 .wordmark{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:.14em;text-transform:uppercase;color:var(--bright);margin:0}
 .wordmark span{color:var(--accent)}
+.ver{font-family:var(--mono);font-size:11px;color:var(--dim)}
 .gamepath{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--dim);display:flex;align-items:center;gap:10px;max-width:52vw}
 .gamepath span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:rtl;text-align:left}
 
@@ -63,6 +64,10 @@ input:focus{outline:none;border-color:var(--accent)}
 .fixed-val{font-family:var(--mono);font-size:13px;color:var(--dim);padding:5px 0}
 .stockmark{font-family:var(--mono);font-size:11px;color:var(--dim)}
 .stockmark b{color:var(--accent);font-weight:500}
+.field.over .stockmark{color:var(--bad)}
+.field.over .stockmark i{font-style:normal}
+input[type=range].over{accent-color:var(--bad)}
+input[type=number].over{border-color:var(--bad);color:var(--bad)}
 
 button{font-family:var(--display);font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;border-radius:2px;cursor:pointer}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -96,6 +101,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 <header class="masthead">
   <h1 class="wordmark">Blam<span>forge</span></h1>
+  <span class="ver" id="ver"></span>
   <div class="gamepath" id="gamepath"></div>
 </header>
 
@@ -123,6 +129,8 @@ const trim = v => Number.isInteger(v) ? v : parseFloat(v.toFixed(6));
 async function boot(){
   S = await api("/api/state");
   document.title = "Blamforge";
+  $("#ver").textContent = "v" + S.registry.version +
+    "  \u00b7  game build " + S.registry.build;
   drawPath();
   if (!S.game || !S.ready) return drawSetup();
   drawRail();
@@ -164,11 +172,18 @@ function drawSetup(){
     $("#gp").onkeydown = e => { if (e.key === "Enter") $("#gset").click(); };
     return;
   }
+  const first = !S.stale || /nothing extracted/.test(S.stale);
   s.innerHTML =
-    '<div class="setup"><h2>One-time setup</h2>' +
-    "<p>Blamforge needs to read the tags out of the game. It unpacks the " +
-    "container once, keeps the dozen or so tags it can edit, and deletes the " +
-    "rest. Your install isn't modified.</p>" +
+    '<div class="setup"><h2>' +
+    (first ? "One-time setup" : "Needs a refresh") + '</h2>' +
+    (first
+      ? "<p>Blamforge has to dig the tags out of the game before it can show " +
+        "you anything. It unpacks the container once, keeps the dozen or so " +
+        "it can edit, and bins the rest. Takes a minute. Your install isn't " +
+        "modified.</p>"
+      : "<p>" + S.stale + ".</p><p>Usually that means the registry has picked " +
+        "up weapons since you last read the game files. Same minute or two as " +
+        "the first time.</p>") +
     '<button class="btn-primary" id="go">Read the game files</button>' +
     '<div id="prog"></div></div>';
   $("#go").onclick = async () => {
@@ -290,9 +305,11 @@ function draw(t){
   const list = document.createElement("div");
   list.className = "fields";
 
+  const repaint = [];
+
   t.fields.forEach(f => {
     const row = document.createElement("div");
-    row.className = "field" + (f.derived ? " fixed" : "");
+    row.className = "field" + (f.derived || f.locked ? " fixed" : "");
 
     const lab = document.createElement("div");
     lab.className = "field-label";
@@ -310,11 +327,11 @@ function draw(t){
     const ctl = document.createElement("div");
     ctl.className = "field-control";
 
-    if (f.derived){
+    if (f.derived || f.locked){
       const d = document.createElement("div");
       d.className = "fixed-val";
       d.id = "v-" + f.key;
-      d.textContent = vals[f.key];
+      d.textContent = vals[f.key] + (f.locked ? "  (fixed)" : "");
       ctl.appendChild(d);
     } else {
       const range = document.createElement("input");
@@ -342,6 +359,17 @@ function draw(t){
       mark.id = "m-" + f.key;
 
       const paint = () => {
+        const bad = f.warn_above && vals[f.key] > vals[f.warn_above];
+        row.classList.toggle("over", !!bad);
+        range.classList.toggle("over", !!bad);
+        num.classList.toggle("over", !!bad);
+        if (bad){
+          const other = t.fields.find(g => g.key === f.warn_above);
+          mark.innerHTML = "<i>more than " +
+            (other ? other.label.toLowerCase() : f.warn_above) +
+            " (" + trim(vals[f.warn_above]) + "). the game may just clamp it.</i>";
+          return;
+        }
         const same = Math.abs(vals[f.key] - f.stock) < 1e-9;
         mark.innerHTML = same ? "as the game has it"
           : "was <b>" + trim(f.stock) + "</b>";
@@ -353,15 +381,16 @@ function draw(t){
         range.value = v; num.value = trim(v);
         links(t);
         t.fields.forEach(g => {
-          if (g.derived){
+          if (g.derived || g.locked){
             const e = document.getElementById("v-" + g.key);
-            if (e) e.textContent = vals[g.key];
+            if (e) e.textContent = vals[g.key] + (g.locked ? "  (fixed)" : "");
           }
         });
-        paint();
+        repaint.forEach(fn => fn());
       };
       range.oninput = e => commit(e.target.value);
       num.oninput = e => commit(e.target.value);
+      repaint.push(paint);
       paint();
 
       ctl.append(range, nw, mark);

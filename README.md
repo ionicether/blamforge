@@ -1,43 +1,46 @@
 # Blamforge
 
-Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast
-shields come back, sentinel beam battery.
+Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast your shields come back, sentinel beam battery. Things you'd otherwise be changing with a hex editor.
+
+## What you need
+
+Two things: Python, and a tool called [retoc](https://github.com/trumank/retoc) that does the actual reading and writing of the game's containers. Blamforge is a front end on top of retoc and does nothing without it.
+
+### Windows
+
+Open PowerShell and run these:
 
 ```
-python3 blamforge.py
+winget install --id Python.Python.3 --source winget --accept-package-agreements --accept-source-agreements
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-installer.ps1 | iex"
 ```
 
-Browser opens. Pick something, drag a slider, hit Install.
+Both put themselves on PATH. **Close PowerShell and open it again** afterwards or neither will be found.
 
-This replaces the command line scripts that were in here before. Those worked
-but meant shuffling files between a terminal, a downloads folder and the game
-directory, which was tedious enough that I stopped using my own tool.
+If `winget` isn't recognised, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
 
-## what's in it
+If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings, Apps, Advanced app settings, App execution aliases, turn off the `python.exe` and `python3.exe` entries.
 
-Tested in game:
+### Linux
 
-- master chief: shields, health, recharge delays and times
-- assault rifle: magazine, reserve, starting ammo, RPM, spread
-- SMG: magazine, reserve, starting ammo
+Python is usually already there. For retoc:
 
-Offsets check out, haven't played them:
+```
+curl -fL -o retoc.tar.xz https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-x86_64-unknown-linux-gnu.tar.xz
+tar -xJf retoc.tar.xz
+install -m 0755 $(find . -maxdepth 3 -type f -name retoc | head -1) ~/.local/bin/retoc
+retoc --version
+```
 
-- sentinel beam: battery drain, heat
-- battle rifle, DMR, spike rifle, shotgun, needler, sniper rifle, rocket
-  launcher, grenade launcher, fuel rod cannon, concussion rifle: magazine,
-  reserve, starting ammo
+The `find` is because the archive puts the binary in a subdirectory whose name changes between releases.
 
-No plasma weapons. They run on a battery rather than a magazine, same as the
-sentinel beam, and I haven't gone after those fields yet.
+`~/.local/bin` is on PATH on most distros. If it isn't, put it somewhere that is, or next to `blamforge.py`.
 
-## what you need
+The [releases page](https://github.com/trumank/retoc/releases) has builds for other architectures if you need one.
 
-Python 3.8 or newer and [retoc](https://github.com/trumank/retoc) on your PATH.
-retoc does the actual container reading and writing, this is a front end on it.
+### Either way
 
-Prebuilt binaries are on retoc's releases page. Building works too but use
-`--locked`:
+Building retoc from source works too, but use `--locked`:
 
 ```
 git clone https://github.com/trumank/retoc && cd retoc
@@ -45,77 +48,97 @@ git checkout v0.1.5
 cargo build --release --locked
 ```
 
-Without that flag cargo pulls a newer version of a dependency and the build
-fails.
+Without that flag, cargo pulls a newer version of one of its dependencies and the build falls over.
 
-Run `blamforge.py` and it should find your Steam install. If not it asks.
-
-First launch unpacks the game container to get the tags out. Minute or two,
-only happens once. It reads from your install and writes only into new folders
-under Content/Paks.
-
-## how it works
-
-Gameplay values live in Blam tags packed inside Unreal IoStore containers.
-`blam` magic at 0x3C, group fourcc at 0x30 stored backwards. Once you've got a
-tag out the values are ints and floats at fixed offsets, so changing them is
-easy. Finding the offset is the work.
-
-`registry.json` holds every offset along with the value it has in a clean
-install. Before writing anything Blamforge checks that value matches. If it
-doesn't, either there's a mod installed already, or the file's been patched, or
-the game updated and everything shifted. Either way it stops.
-
-Every mod gets its own folder under Content/Paks. Remove deletes the folder.
-
-## adding things
-
-Tags carry their field names as plain strings:
+Check retoc is found:
 
 ```
-strings -a -t d chunk | grep -i magazine
+retoc --version
 ```
 
-That tells you what's in the tag, not where. For that, diff two versions of the
-same tag and look at the bytes that differ:
+If that errors, Blamforge will tell you the same thing when you start it.
+
+## Running it
 
 ```
-cmp -l stock.tag modded.tag
+python blamforge.py
 ```
 
-Read four bytes at each offset as a float and see if the number means anything.
-60 next to 600 is a magazine and reserve. Diffing an existing mod is much
-faster than working blind, the Chief shield values came out of a community mod
-in about ten minutes.
+> On linux it's safer to run `python3 blamforge.py`
 
-Add an entry to `registry.json` and it turns up in the sidebar.
+A browser tab opens, then...
 
-## known rough edges
+1. It looks for your Steam install. If it can't find it, paste the folder that has `Meteorite/Content/Paks` in it.
+2. First time only, it unpacks the game container to get at the tags. A minute or two. It keeps about a dozen files and bins the rest. Your install isn't modified, this only reads from it.
+3. Pick something and drag the sliders. Each one shows what the value was before you touched it.
+4. Install. That builds the mod and puts it in its own folder under `Content/Paks`.
 
-The slider ranges are the same for every weapon, which is wrong. A sniper rifle
-holds four rounds and its slider goes to 600. Works, but you can't land on
-anything useful.
+Remove undoes it.
 
-Rounds per reload is editable and unlinked, so if you set a big magazine you
-have to remember to raise it too or the gun reloads a quarter of a clip.
+Launch the game and enjoy. Blamforge doesn't need to be running.
 
-## limits
+## What's in it
 
-Offsets are for build 2026.08.11.1121610. A game update will move them and it'll
-refuse to patch rather than break anything.
+| | | |
+|---|---|---|
+| Master Chief | shields, health, recharge delay and time | tested |
+| Assault rifle | mag, reserve, starting ammo, RPM, spread | tested |
+| SMG | mag, reserve, starting ammo | tested |
+| Sentinel beam | battery drain, heat | tested |
+| BR, DMR, spike rifle, shotgun, needler, sniper, rockets, GL, fuel rod, concussion | mag, reserve, starting ammo | offsets check out, haven't played them |
 
-Damage resistance, difficulty skulls and anything else in player traits are
-UE5-side, not in the tags at all. That needs
-[UE4SS](https://github.com/UE4SS-RE/RE-UE4SS).
+No plasma weapons yet. They run on a battery instead of a magazine, same as the sentinel beam, and I haven't gone looking for those fields.
 
-Extracting containers yourself: don't do it into /tmp. Mine's a tmpfs, it
-filled up and truncated silently, and I spent an evening sure a tag wasn't in
-the game.
+## Uninstalling
 
-## note
+Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever you changed, with a `blamforge.txt` in it saying what was changed and when. The Remove button deletes the folder, and so does deleting it yourself.
 
-Offsets in here, no game data. Bring your own copy.
+If you've binned Blamforge and still have mods installed:
 
-Server binds to localhost and makes no outbound requests.
+```
+python uninstall.py
+```
 
-retoc is [trumank's](https://github.com/trumank). MIT licensed.
+> On linux it's safer to run `python3 uninstall.py`
+
+That lists what's there. Add a name to remove one, or `--all` for everything. It only touches folders with that text file in them, so nobody else's mods get caught up in it.
+
+Close the game first. Windows won't let you delete files something else has open.
+
+## Platforms
+
+Written and tested on Linux. It should run anywhere python and retoc do, and it looks in the usual Windows/Linux Steam locations, but I've only ever used it on Linux myself. If something breaks elsewhere, say so.
+
+## How it works, roughly
+
+Gameplay values live in Blam engine tags packed inside Unreal's IoStore containers. Once a tag's out, the numbers are ints and floats at fixed offsets. `registry.json` is a list of those offsets and the value each one holds in a clean install, and Blamforge checks that value matches before it writes anything. If it doesn't, you've got a mod installed already, or you've patched the file before, or the game updated and everything moved.
+
+Finding new offsets is written up in CONTRIBUTING.md.
+
+## Potential hazards
+
+Offsets were checked against build 2026.08.11.1121610. I cannot promis it will work beyond that.
+
+A fair bit isn't reachable from tags at all. Damage resistance, the difficulty skulls, anything to do with player traits. That stuff lives in Unreal-side code and, as far as I'm aware, no amount of tag editing gets near it. [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) is the tool for that, not this one. Checkout NexusMods for UE4SS mods.
+
+Linux users - You prob know better, but I didn't think about this at the time. If you go extracting containers yourself, don't do it into `/tmp`. On a lot of setups that's a RAM disk, and pakchunk0 is 106,000 files. It'll fill up and truncate silently, and you'll spend an evening convinced the file you're looking for doesn't exist. Ask me how I know.
+
+## Files
+
+Offsets, not game data. Bring your own copy of the game. I cannot upload the game data. That's a 'tsk tsk'
+
+## Privacy
+
+Server binds to a free port on `127.0.0.1` and makes no outbound requests. Nothing leaves your machine.
+
+## Version
+
+See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build` field next to it is the game build the offsets came from.
+
+## Thanks
+
+retoc and repak are [trumank's](https://github.com/trumank), and this doesn't work without them.
+
+The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
+
+MIT licensed.

@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "build": "2026.08.11.1121610",
   "targets": [
     {
@@ -80,17 +80,6 @@
           "max": 40,
           "step": 0.05,
           "unit": "s"
-        },
-        {
-          "key": "body_delay_2",
-          "label": "Health recharge delay (second section)",
-          "off": 46395,
-          "type": "f32",
-          "stock": 4,
-          "min": 0.01,
-          "max": 10,
-          "step": 0.01,
-          "unit": "s"
         }
       ]
     },
@@ -99,7 +88,7 @@
       "name": "Assault rifle",
       "subtitle": "Magazine, reserve, rate of fire, spread",
       "group": "paew",
-      "chunk": "422244d93c8d5f7300000002",
+      "chunk": "7ce4e2f8d8ef46be00000002",
       "container": "pakchunk0-Windows",
       "status": "confirmed",
       "linked": [
@@ -107,6 +96,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -116,9 +109,9 @@
           "help": "Rounds per clip.",
           "off": 30137,
           "type": "u16",
-          "stock": 60,
+          "stock": 36,
           "min": 1,
-          "max": 600,
+          "max": 360,
           "step": 1,
           "unit": ""
         },
@@ -128,9 +121,9 @@
           "help": "Most ammo you can carry, magazine included.",
           "off": 30135,
           "type": "u16",
-          "stock": 600,
+          "stock": 360,
           "min": 1,
-          "max": 60000,
+          "max": 3600,
           "step": 1,
           "unit": ""
         },
@@ -139,11 +132,12 @@
           "label": "Starting ammo",
           "off": 30133,
           "type": "u16",
-          "stock": 300,
+          "stock": 180,
           "min": 0,
-          "max": 60000,
+          "max": 1800,
           "step": 1,
-          "unit": ""
+          "unit": "",
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -151,18 +145,17 @@
           "help": "Kept at reserve ceiling minus magazine. The game desyncs if this drifts.",
           "off": 30139,
           "type": "u16",
-          "stock": 540,
+          "stock": 324,
           "derived": true
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
+          "help": "Kept equal to the magazine.",
           "off": 30141,
           "type": "u16",
-          "stock": 60,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "stock": 36,
+          "derived": true
         },
         {
           "key": "rate_of_fire",
@@ -170,11 +163,11 @@
           "help": "Rounds per second. 15 is 900 RPM.",
           "off": 30809,
           "type": "f32",
-          "stock": 15,
+          "stock": 12.0,
           "mirror": 30813,
-          "min": 1,
-          "max": 60,
-          "step": 0.5,
+          "min": 0.0,
+          "max": 48.0,
+          "step": 0.12,
           "unit": "/s"
         },
         {
@@ -183,14 +176,15 @@
           "help": "Cone of fire, in radians. Stock is 3.5 degrees.",
           "off": 30925,
           "type": "f32",
-          "stock": 0.0610865,
+          "stock": 0.005235987715423107,
           "mirror": 30929,
-          "min": 0,
-          "max": 0.35,
-          "step": 0.001,
+          "min": 0.0,
+          "max": 0.02094395,
+          "step": 5.23599e-05,
           "unit": " rad"
         }
-      ]
+      ],
+      "note": "Two chunks in the game call themselves the assault rifle. This is the one holding 36 rounds, which is what the game shows. The other holds 60 at a faster rate of fire and I don't know what it's for."
     },
     {
       "id": "smg",
@@ -206,6 +200,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -226,8 +224,8 @@
           "type": "u16",
           "stock": 420,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 4200,
+          "step": 20
         },
         {
           "key": "initial",
@@ -236,8 +234,9 @@
           "type": "u16",
           "stock": 300,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 3000,
+          "step": 15,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -249,13 +248,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 30028,
           "type": "u16",
           "stock": 60,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -266,7 +263,7 @@
       "group": "paew",
       "chunk": "01786f24495b96f000000002",
       "container": "pakchunk0-Windows",
-      "status": "derived",
+      "status": "confirmed",
       "note": "The beam drains 'age' rather than ammo. Stock 0.0013 per round gives roughly 770 shots.",
       "fields": [
         {
@@ -320,6 +317,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -330,7 +331,7 @@
           "type": "u16",
           "stock": 36,
           "min": 1,
-          "max": 600,
+          "max": 360,
           "step": 1
         },
         {
@@ -340,8 +341,8 @@
           "type": "u16",
           "stock": 144,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 1440,
+          "step": 7
         },
         {
           "key": "initial",
@@ -350,8 +351,9 @@
           "type": "u16",
           "stock": 108,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 1080,
+          "step": 5,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -363,13 +365,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29160,
           "type": "u16",
           "stock": 36,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -386,6 +386,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -396,7 +400,7 @@
           "type": "u16",
           "stock": 15,
           "min": 1,
-          "max": 600,
+          "max": 150,
           "step": 1
         },
         {
@@ -406,8 +410,8 @@
           "type": "u16",
           "stock": 75,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 750,
+          "step": 3
         },
         {
           "key": "initial",
@@ -416,8 +420,9 @@
           "type": "u16",
           "stock": 45,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 450,
+          "step": 2,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -429,13 +434,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29010,
           "type": "u16",
           "stock": 15,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -452,6 +455,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -462,7 +469,7 @@
           "type": "u16",
           "stock": 40,
           "min": 1,
-          "max": 600,
+          "max": 400,
           "step": 1
         },
         {
@@ -472,8 +479,8 @@
           "type": "u16",
           "stock": 160,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 1600,
+          "step": 8
         },
         {
           "key": "initial",
@@ -482,8 +489,9 @@
           "type": "u16",
           "stock": 120,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 1200,
+          "step": 6,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -495,13 +503,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29358,
           "type": "u16",
           "stock": 40,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -528,7 +534,7 @@
           "type": "u16",
           "stock": 10,
           "min": 1,
-          "max": 600,
+          "max": 100,
           "step": 1
         },
         {
@@ -538,8 +544,8 @@
           "type": "u16",
           "stock": 60,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 600,
+          "step": 3
         },
         {
           "key": "initial",
@@ -548,8 +554,9 @@
           "type": "u16",
           "stock": 30,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 300,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -562,12 +569,11 @@
         {
           "key": "rounds_reloaded",
           "label": "Rounds per reload",
+          "help": "The shotgun loads one shell at a time. This one stays put.",
           "off": 30011,
           "type": "u16",
           "stock": 1,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "locked": true
         }
       ]
     },
@@ -584,6 +590,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -594,7 +604,7 @@
           "type": "u16",
           "stock": 6,
           "min": 1,
-          "max": 600,
+          "max": 60,
           "step": 1
         },
         {
@@ -604,7 +614,7 @@
           "type": "u16",
           "stock": 30,
           "min": 1,
-          "max": 60000,
+          "max": 300,
           "step": 1
         },
         {
@@ -614,8 +624,9 @@
           "type": "u16",
           "stock": 18,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 180,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -627,13 +638,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29397,
           "type": "u16",
           "stock": 6,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -650,6 +659,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -660,7 +673,7 @@
           "type": "u16",
           "stock": 1,
           "min": 1,
-          "max": 600,
+          "max": 10,
           "step": 1
         },
         {
@@ -670,7 +683,7 @@
           "type": "u16",
           "stock": 16,
           "min": 1,
-          "max": 60000,
+          "max": 160,
           "step": 1
         },
         {
@@ -680,8 +693,9 @@
           "type": "u16",
           "stock": 8,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 80,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -693,13 +707,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29075,
           "type": "u16",
           "stock": 1,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -716,6 +728,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -726,7 +742,7 @@
           "type": "u16",
           "stock": 5,
           "min": 1,
-          "max": 600,
+          "max": 50,
           "step": 1
         },
         {
@@ -736,7 +752,7 @@
           "type": "u16",
           "stock": 25,
           "min": 1,
-          "max": 60000,
+          "max": 250,
           "step": 1
         },
         {
@@ -746,8 +762,9 @@
           "type": "u16",
           "stock": 15,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 150,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -759,13 +776,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29254,
           "type": "u16",
           "stock": 5,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -782,6 +797,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -792,7 +811,7 @@
           "type": "u16",
           "stock": 24,
           "min": 1,
-          "max": 600,
+          "max": 240,
           "step": 1
         },
         {
@@ -802,8 +821,8 @@
           "type": "u16",
           "stock": 120,
           "min": 1,
-          "max": 60000,
-          "step": 1
+          "max": 1200,
+          "step": 6
         },
         {
           "key": "initial",
@@ -812,8 +831,9 @@
           "type": "u16",
           "stock": 96,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 960,
+          "step": 4,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -825,13 +845,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29755,
           "type": "u16",
           "stock": 24,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -848,6 +866,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -858,7 +880,7 @@
           "type": "u16",
           "stock": 2,
           "min": 1,
-          "max": 600,
+          "max": 20,
           "step": 1
         },
         {
@@ -868,7 +890,7 @@
           "type": "u16",
           "stock": 8,
           "min": 1,
-          "max": 60000,
+          "max": 80,
           "step": 1
         },
         {
@@ -878,8 +900,9 @@
           "type": "u16",
           "stock": 4,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 50,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -891,13 +914,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29696,
           "type": "u16",
           "stock": 2,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     },
@@ -914,6 +935,10 @@
           "source": "total_max",
           "minus": "magazine",
           "target": "inventory_max"
+        },
+        {
+          "source": "magazine",
+          "target": "rounds_reloaded"
         }
       ],
       "fields": [
@@ -924,7 +949,7 @@
           "type": "u16",
           "stock": 4,
           "min": 1,
-          "max": 600,
+          "max": 40,
           "step": 1
         },
         {
@@ -934,7 +959,7 @@
           "type": "u16",
           "stock": 24,
           "min": 1,
-          "max": 60000,
+          "max": 240,
           "step": 1
         },
         {
@@ -944,8 +969,9 @@
           "type": "u16",
           "stock": 12,
           "min": 0,
-          "max": 60000,
-          "step": 1
+          "max": 120,
+          "step": 1,
+          "warn_above": "total_max"
         },
         {
           "key": "inventory_max",
@@ -957,13 +983,11 @@
         },
         {
           "key": "rounds_reloaded",
-          "label": "Rounds per reload",
+          "label": "Rounds per reload (derived)",
           "off": 29313,
           "type": "u16",
           "stock": 4,
-          "min": 1,
-          "max": 200,
-          "step": 1
+          "derived": true
         }
       ]
     }
