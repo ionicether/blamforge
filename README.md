@@ -68,6 +68,10 @@ retoc --version
 
 ## Running it
 
+Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases/tag/v0.4.0) and unzip it wherever you like.
+
+Then open a terminal in that folder. On Windows, right-click the folder and pick "Open in Terminal". On Linux, most file managers have "Open Terminal Here" in the right-click menu, or just cd to it.
+
 ```
 python blamforge.py
 ```
