@@ -68,7 +68,7 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 
 Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 10 shots for the plasma launcher and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
 
-Still missing: plasma repeater, energy sword, gravity hammer. The repeater's heat value reads zero, which I don't believe, so it needs a proper look rather than a guess.
+Still missing: plasma repeater, energy sword, gravity hammer. The repeater's heat value reads zero, which is clearly incorrect. I will need to investigate.
 
 ## Uninstalling
 
