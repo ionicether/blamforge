@@ -34,42 +34,6 @@ python3 --version
 
 If that errors, install it with whatever your distro uses. `sudo pacman -S python` on Arch, `sudo apt install python3` on Debian or Ubuntu, `sudo dnf install python3` on Fedora.
 
-### (Optional, but unnecessary) Getting retoc yourself
-
-Only if you'd rather not let Blamforge fetch it, or you're on an architecture it doesn't have a build for.
-
-Windows, in PowerShell:
-
-```
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-installer.ps1 | iex"
-```
-
-Linux:
-
-```
-curl -fL -o retoc.tar.xz https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-x86_64-unknown-linux-gnu.tar.xz
-tar -xJf retoc.tar.xz
-install -m 0755 $(find . -maxdepth 3 -type f -name retoc | head -1) ~/.local/bin/retoc
-```
-
-The `find` is because the archive puts the binary in a subdirectory whose name changes between releases. `~/.local/bin` is on PATH on most distros; if it isn't, put it somewhere that is, or next to `blamforge.py`.
-
-The [releases page](https://github.com/trumank/retoc/releases) has builds for other architectures.
-
-Or build it, but use `--locked` or cargo pulls a newer version of one of its dependencies which may break something:
-
-```
-git clone https://github.com/trumank/retoc && cd retoc
-git checkout v0.1.5
-cargo build --release --locked
-```
-
-Either way, check it's found:
-
-```
-retoc --version
-```
-
 ## Running it
 
 Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases) and unzip it wherever you like.
