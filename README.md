@@ -51,7 +51,7 @@ A browser tab opens, then...
 3. Pick something and drag the sliders. Each one shows what the value was before you touched it.
 4. Install. That builds the mod and puts it in its own folder under `Content/Paks`.
 
-Remove undoes it.
+Remove removes the associated mod it created and resets the interface to the default value for that selection.
 
 Launch the game and enjoy. Blamforge doesn't need to be running.
 
