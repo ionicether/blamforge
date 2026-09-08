@@ -149,9 +149,22 @@ function drawSetup(){
   if (!S.retoc){
     s.innerHTML = '<div class="setup"><h2>Can\'t find retoc</h2>' +
       "<p>It's what actually reads and writes the game's containers, so " +
-      'nothing works without it. Grab it from ' +
-      '<code>github.com/trumank/retoc</code>, put it somewhere on your PATH, ' +
-      'then start Blamforge again.</p></div>';
+      "nothing works without it.</p>" +
+      (S.retoc_asset
+        ? "<p>I can fetch it for you. That downloads <code>" +
+          S.retoc_asset + "</code> from <code>" + S.retoc_url +
+          "</code> and puts it in this folder. Nothing goes on your PATH.</p>" +
+          '<button class="btn-primary" id="getretoc">Download retoc</button>'
+        : "<p>There's no prebuilt retoc for this machine that I know of. " +
+          "Grab one from <code>github.com/trumank/retoc</code> and put it " +
+          "next to <code>blamforge.py</code>.</p>") +
+      '<div id="prog"></div></div>';
+    const btn = $("#getretoc");
+    if (btn) btn.onclick = async () => {
+      btn.disabled = true;
+      await api("/api/get_retoc", {});
+      poll();
+    };
     return;
   }
   if (!S.game){
@@ -255,7 +268,13 @@ async function pick(id){
     return;
   }
   stock = {}; vals = {};
-  t.fields.forEach(f => { stock[f.key] = f.stock; vals[f.key] = r.values[f.key]; });
+  // r.values is what the stock tag holds; r.saved is what you installed last
+  // time, if anything. Start from whichever is more useful.
+  t.fields.forEach(f => {
+    stock[f.key] = f.stock;
+    vals[f.key] = (r.saved && r.saved[f.key] !== undefined)
+      ? r.saved[f.key] : r.values[f.key];
+  });
   draw(t);
 }
 
@@ -359,15 +378,24 @@ function draw(t){
       mark.id = "m-" + f.key;
 
       const paint = () => {
-        const bad = f.warn_above && vals[f.key] > vals[f.warn_above];
+        // two kinds of warning: above another field's value, or above a
+        // fixed number. Both just turn the row red and say why.
+        const overField = f.warn_above && vals[f.key] > vals[f.warn_above];
+        const overFixed = f.warn_over != null && vals[f.key] > f.warn_over;
+        const bad = overField || overFixed;
         row.classList.toggle("over", !!bad);
         range.classList.toggle("over", !!bad);
         num.classList.toggle("over", !!bad);
-        if (bad){
+        if (overField){
           const other = t.fields.find(g => g.key === f.warn_above);
           mark.innerHTML = "<i>more than " +
             (other ? other.label.toLowerCase() : f.warn_above) +
             " (" + trim(vals[f.warn_above]) + "). the game may just clamp it.</i>";
+          return;
+        }
+        if (overFixed){
+          mark.innerHTML = "<i>the counter on the gun only has two digits, " +
+            "so this will read as " + (vals[f.key] % 100) + "</i>";
           return;
         }
         const same = Math.abs(vals[f.key] - f.stock) < 1e-9;

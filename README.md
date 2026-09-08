@@ -6,51 +6,57 @@ Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast yo
 
 ## What you need
 
-Two things: Python, and a tool called [retoc](https://github.com/trumank/retoc) that does the actual reading and writing of the game's containers. Blamforge is the offsets (which took a while to find) and a web UI to wrangle them with.
+**Python.** That's the only thing you have to install.
 
-### Windows
+Blamforge also needs [retoc](https://github.com/trumank/retoc), which does the actual reading and writing of the game's containers. If you don't already have it, Blamforge offers to download it the first time you run it. It tells you exactly what file it's fetching and from where, puts it in its own folder rather than on your PATH, and checks it runs before carrying on. Nothing else to do.
 
-Open PowerShell and run these:
+Blamforge itself is the offsets (which took a while to find) and a web UI to wrangle them with.
+
+### Getting Python
+
+**Windows.** Open PowerShell:
 
 ```
 winget install --id Python.Python.3 --source winget --accept-package-agreements --accept-source-agreements
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-installer.ps1 | iex"
 ```
 
-Both put themselves on PATH. **Close PowerShell and open it again** afterwards or neither will be found.
+**Close PowerShell and open it again** afterwards, or it won't be found.
 
 >If `winget` isn't recognised, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
 
 >If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings -> Apps -> Advanced app settings -> App execution aliases -> turn off the `python.exe` and `python3.exe` entries.
 
-Check retoc is found:
+**Linux.** Usually already there. Check:
 
 ```
-retoc --version
+python3 --version
 ```
 
-If that errors, Blamforge will tell you the same thing when you start it.
+If that errors, install it with whatever your distro uses. `sudo pacman -S python` on Arch, `sudo apt install python3` on Debian or Ubuntu, `sudo dnf install python3` on Fedora.
 
-### Linux
+### (Optional, but unnecessary) Getting retoc yourself
 
-Python is usually already there. For retoc:
+Only if you'd rather not let Blamforge fetch it, or you're on an architecture it doesn't have a build for.
+
+Windows, in PowerShell:
+
+```
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-installer.ps1 | iex"
+```
+
+Linux:
 
 ```
 curl -fL -o retoc.tar.xz https://github.com/trumank/retoc/releases/download/v0.1.5/retoc_cli-x86_64-unknown-linux-gnu.tar.xz
 tar -xJf retoc.tar.xz
 install -m 0755 $(find . -maxdepth 3 -type f -name retoc | head -1) ~/.local/bin/retoc
-retoc --version
 ```
 
-The `find` is because the archive puts the binary in a subdirectory whose name changes between releases.
+The `find` is because the archive puts the binary in a subdirectory whose name changes between releases. `~/.local/bin` is on PATH on most distros; if it isn't, put it somewhere that is, or next to `blamforge.py`.
 
-`~/.local/bin` is on PATH on most distros. If it isn't, put it somewhere that is, or next to `blamforge.py`.
+The [releases page](https://github.com/trumank/retoc/releases) has builds for other architectures.
 
-The [releases page](https://github.com/trumank/retoc/releases) has builds for other architectures if you need one.
-
-#### Or build it with cargo
-
-Building retoc from source works too, but use `--locked`:
+Or build it, but use `--locked` or cargo pulls a newer version of one of its dependencies which may break something:
 
 ```
 git clone https://github.com/trumank/retoc && cd retoc
@@ -58,9 +64,7 @@ git checkout v0.1.5
 cargo build --release --locked
 ```
 
-Without that flag, cargo pulls a newer version of one of its dependencies which may break something.
-
-Check retoc is found:
+Either way, check it's found:
 
 ```
 retoc --version
@@ -68,15 +72,13 @@ retoc --version
 
 ## Running it
 
-Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases/tag/v0.4.0) and unzip it wherever you like.
+Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases) and unzip it wherever you like.
 
-Then open a terminal in that folder. On Windows, right-click the folder and pick "Open in Terminal". On Linux, most file managers have "Open Terminal Here" in the right-click menu, or just cd to it.
+Then open a terminal in that folder. On Windows, right-click the folder and pick "Open in Terminal", or shift-right-click and "Open PowerShell window here" if you're on 10. On Linux most file managers have "Open Terminal Here" in the right-click menu, or just `cd` to it.
 
-```
-python blamforge.py
-```
+Windows: `python blamforge.py`
 
-> On linux it's safer to run `python3 blamforge.py`
+Linux: `python3 blamforge.py`
 
 A browser tab opens, then...
 
@@ -98,8 +100,11 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 | SMG | mag, reserve, starting ammo | tested |
 | Sentinel beam | battery drain, heat | tested |
 | BR, DMR, spike rifle, shotgun, needler, sniper, rockets, GL, fuel rod, concussion | mag, reserve, starting ammo | offsets check out, haven't played them |
+| Plasma rifle, plasma pistol, plasma launcher, beam rifle, focus rifle, spartan laser | battery per shot, heat per shot | same |
 
-No plasma weapons yet. They run on a battery instead of a magazine, same as the sentinel beam, and I haven't gone looking for those fields.
+Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 10 shots for the plasma launcher and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
+
+Still missing: plasma repeater, energy sword, gravity hammer. The repeater's heat value reads zero, which I don't believe, so it needs a proper look rather than a guess.
 
 ## Uninstalling
 
@@ -107,11 +112,9 @@ Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever y
 
 If you've binned Blamforge and still have mods installed:
 
-```
-python uninstall.py
-```
+Windows: `python uninstall.py`
 
-> On linux it's safer to run `python3 uninstall.py`
+Linux: `python3 uninstall.py`
 
 That lists what's there. Add a name to remove one, or `--all` for everything. It only touches folders with that text file in them, so nobody else's mods get caught up in it.
 

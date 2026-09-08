@@ -4,6 +4,49 @@ Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`. That's the one that
 decides whether any of this works.
 
+## 0.5.0
+
+Covenant weapons. Plasma rifle, plasma pistol, plasma launcher, beam rifle,
+focus rifle, spartan laser. They don't have magazines, they spend a fraction
+of the battery per shot like the sentinel beam, so it's battery per shot and
+heat per shot instead of ammo.
+
+Plasma pistol gets six sliders because it has two triggers and each one is its
+own barrel with its own values.
+
+None of them have been played yet.
+
+Campaign and multiplayer battery costs are usually the same number, but the
+beam rifle is 0.1 and 0.05, and the plasma pistol splits the same way. If you
+change one and nothing happens in game it's probably the other one.
+
+Focus rifle has two tags, same as the assault rifle did. Went with the one
+whose asset paths are all focus rifle and left a note in the app pointing at
+the other.
+
+Other things:
+
+- Retoc downloads itself if you don't have it. Says what it's fetching first,
+  puts it next to blamforge.py rather than on PATH, and runs it once to check
+  it works. The linux builds link against system glibc, so on an old distro it
+  lands fine and then dies halfway through extracting the game. Better to find
+  out at the download.
+- It remembers what you installed. Saved on install, not while you're
+  dragging. Reset goes back to stock, Remove forgets it.
+- Help text on every field. Most of them had none.
+- Battle rifle magazine steps in threes. Three round bursts.
+- AR and BR go red past 99. The counter on the side of the gun is two digits,
+  so 123 rounds shows as 23. The ammo is really there.
+- Cache tells you what's missing instead of dumping you back at setup.
+
+### Fixed
+
+- "Starting ammo" is how much ammo a weapon or ammo pack comes with when it's
+  placed in the level. Not what you start a level holding, and not what drops
+  off an enemy. Renamed. I took the name from the tag calling it "total
+  initial" and never checked, and it took someone noticing the needler behaved
+  differently from the assault rifle to work out what it really is.
+
 ## 0.4.0
 
 Everything in here came out of using 0.3 for an afternoon.

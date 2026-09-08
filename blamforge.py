@@ -16,6 +16,10 @@ import http.server
 import json
 import os
 import re
+import urllib.request
+import zipfile
+import tarfile
+import platform
 import shutil
 import socket
 import socketserver
@@ -48,8 +52,105 @@ def retoc_path():
         if os.path.isfile(p):
             return p
     return None
+
+
 CACHE = os.path.join(HERE, ".cache")
 CONTAINER = "pakchunk0-Windows.utoc"
+
+# Pinned rather than "latest" so the download can't quietly become something
+# else. Bump it when there's a reason to.
+RETOC_VERSION = "v0.1.5"
+RETOC_BASE = ("https://github.com/trumank/retoc/releases/download/"
+              + RETOC_VERSION + "/")
+RETOC_ASSETS = {
+    ("Linux", "x86_64"):   "retoc_cli-x86_64-unknown-linux-gnu.tar.xz",
+    ("Linux", "aarch64"):  "retoc_cli-aarch64-unknown-linux-gnu.tar.xz",
+    ("Windows", "AMD64"):  "retoc_cli-x86_64-pc-windows-msvc.zip",
+    ("Windows", "x86_64"): "retoc_cli-x86_64-pc-windows-msvc.zip",
+}
+
+
+def retoc_asset():
+    """Which release file suits this machine, if we know."""
+    return RETOC_ASSETS.get((platform.system(), platform.machine()))
+
+
+def fetch_retoc(progress):
+    """Download retoc and drop the binary next to this script.
+
+    Deliberately not touching PATH. A running process keeps the PATH it
+    started with, so installing there would need a restart, whereas a file
+    in our own directory is found the moment it exists.
+    """
+    asset = retoc_asset()
+    if not asset:
+        raise RuntimeError(
+            "No prebuilt retoc for %s %s that I know of. Grab one from %s "
+            "and put it next to blamforge.py."
+            % (platform.system(), platform.machine(), RETOC_BASE))
+
+    url = RETOC_BASE + asset
+    progress("Downloading " + asset)
+
+    scratch = tempfile.mkdtemp(prefix="retoc-", dir=HERE)
+    try:
+        archive = os.path.join(scratch, asset)
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r, \
+                    open(archive, "wb") as f:
+                shutil.copyfileobj(r, f)
+        except Exception as e:
+            raise RuntimeError("Couldn't download it: %s" % e)
+
+        progress("Unpacking")
+        if asset.endswith(".zip"):
+            with zipfile.ZipFile(archive) as z:
+                z.extractall(scratch)
+        else:
+            with tarfile.open(archive) as t:
+                t.extractall(scratch)
+
+        # the binary sits in a subdirectory whose name changes between
+        # releases, so go looking for it
+        found = None
+        for root, _, files in os.walk(scratch):
+            for f in files:
+                if f in ("retoc", "retoc.exe"):
+                    found = os.path.join(root, f)
+                    break
+            if found:
+                break
+        if not found:
+            raise RuntimeError("Downloaded it but there's no retoc inside")
+
+        dest = os.path.join(HERE, os.path.basename(found))
+        shutil.copy2(found, dest)
+        os.chmod(dest, 0o755)
+
+        # A file being there doesn't mean it runs. The linux builds link
+        # against system glibc, so on an older distro this lands fine and
+        # then dies with a linker error the first time it's used, halfway
+        # through extracting the game. Better to find out now.
+        progress("Checking it runs")
+        try:
+            r = subprocess.run([dest, "--version"], capture_output=True,
+                               text=True, timeout=30)
+        except OSError as e:
+            os.remove(dest)
+            raise RuntimeError(
+                "Downloaded it but it won't run on this system: %s. Try a "
+                "different build from %s, or build it yourself." % (e, RETOC_BASE))
+        if r.returncode != 0:
+            err = (r.stderr or r.stdout or "").strip().splitlines()
+            os.remove(dest)
+            raise RuntimeError(
+                "Downloaded it but it won't run: %s. Try a different build "
+                "from %s, or build it yourself."
+                % (err[0] if err else "no output", RETOC_BASE))
+
+        return dest
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
 
 # The .pak that has to sit next to a .utoc/.ucas or the engine won't mount the
 # container. retoc doesn't produce one, so we copy an existing one.
@@ -247,6 +348,31 @@ def extract(paks, progress):
 
 
 NOTE = "blamforge.txt"
+SETTINGS = os.path.join(HERE, "settings.json")
+
+
+def load_settings():
+    """What was installed last time, per target.
+
+    Lives next to blamforge.py rather than in .cache so that re-reading the
+    game files doesn't throw it away.
+    """
+    try:
+        with open(SETTINGS, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_settings(target_id, values):
+    d = load_settings()
+    d[target_id] = {k: v for k, v in values.items()}
+    try:
+        with open(SETTINGS, "w", encoding="utf-8") as f:
+            json.dump(d, f, indent=2)
+    except OSError:
+        pass          # not worth failing an install over
 PREFIX = "bf_"
 
 
@@ -269,7 +395,8 @@ def write_note(dest, t, values, patched):
     """Leave a plain text record in the mod folder.
 
     Mostly so that in six months you can look at a folder and know what's in
-    it.
+    it. uninstall.py only cares that the file exists, not what it says, so
+    there's nothing here that has to parse.
     """
     lines = [
         "%s %s" % (APP, VERSION),
@@ -372,6 +499,7 @@ def install(target_id, values, progress):
             shutil.copy2(os.path.join(dist, stem + ext),
                          os.path.join(dest, stem + ext))
         write_note(dest, t, values, b)
+        save_settings(target_id, values)
         return dest
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
@@ -381,6 +509,13 @@ def uninstall(target_id):
     d = mod_dir(TARGETS[target_id]["id"])
     if d:
         shutil.rmtree(d)
+        s = load_settings()
+        if s.pop(target_id, None) is not None:
+            try:
+                with open(SETTINGS, "w", encoding="utf-8") as f:
+                    json.dump(s, f, indent=2)
+            except OSError:
+                pass
         return True
     return False
 
@@ -426,6 +561,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 "busy": STATE["busy"],
                 "installed": installed_ids(),
                 "retoc": retoc_path() is not None,
+                "retoc_asset": retoc_asset(),
+                "retoc_url": RETOC_BASE,
             })
 
         if u.path == "/api/values":
@@ -438,8 +575,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return self._json({"error": "not extracted"}, 404)
             b = open(p, "rb").read()
             bad = verify(b, t)
+            saved = load_settings().get(tid, {})
             return self._json({
                 "values": {f["key"]: read_field(b, f) for f in t["fields"]},
+                "saved": {k: v for k, v in saved.items()
+                          if any(f["key"] == k for f in t["fields"])},
                 "mismatch": [{"key": k, "got": g, "want": w} for k, g, w in bad],
             })
 
@@ -458,6 +598,25 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                     "containing Meteorite/Content/Paks."}, 400)
             STATE["game"], STATE["paks"] = game, paks
             return self._json({"game": game, "ready": cache_ok()})
+
+        if u.path == "/api/get_retoc":
+            if retoc_path():
+                return self._json({"already": True})
+            if STATE["busy"]:
+                return self._json({"error": "already working"}, 409)
+
+            def run():
+                STATE["busy"] = True
+                try:
+                    p = fetch_retoc(lambda s: STATE.update(status=s))
+                    STATE["status"] = "Got it: " + os.path.basename(p)
+                except Exception as e:
+                    STATE["status"] = "Failed: %s" % e
+                finally:
+                    STATE["busy"] = False
+
+            threading.Thread(target=run, daemon=True).start()
+            return self._json({"started": True})
 
         if u.path == "/api/extract":
             if not STATE["paks"]:

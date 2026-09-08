@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "build": "2026.08.11.1121610",
   "targets": [
     {
@@ -62,6 +62,7 @@
         {
           "key": "body_delay",
           "label": "Health recharge delay",
+          "help": "Quiet time before health starts coming back.",
           "off": 41499,
           "type": "f32",
           "stock": 4,
@@ -73,6 +74,7 @@
         {
           "key": "body_time",
           "label": "Health recharge time",
+          "help": "How long a full health refill takes once it starts.",
           "off": 41507,
           "type": "f32",
           "stock": 20,
@@ -113,7 +115,8 @@
           "min": 1,
           "max": 360,
           "step": 1,
-          "unit": ""
+          "unit": "",
+          "warn_over": 99
         },
         {
           "key": "total_max",
@@ -129,7 +132,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 30133,
           "type": "u16",
           "stock": 180,
@@ -160,7 +164,7 @@
         {
           "key": "rate_of_fire",
           "label": "Rate of fire",
-          "help": "Rounds per second. 15 is 900 RPM.",
+          "help": "How fast it fires. Higher is faster. Stock is 12, though the devs describe the intended rate as 10 rounds a second, so this probably isn't measured in the units you'd expect.",
           "off": 30809,
           "type": "f32",
           "stock": 12.0,
@@ -173,7 +177,7 @@
         {
           "key": "spread",
           "label": "Spread",
-          "help": "Cone of fire, in radians. Stock is 3.5 degrees.",
+          "help": "Cone of fire, in radians. Stock is 0.3 degrees.",
           "off": 30925,
           "type": "f32",
           "stock": 0.005235987715423107,
@@ -210,6 +214,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 30024,
           "type": "u16",
           "stock": 60,
@@ -220,6 +225,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 30022,
           "type": "u16",
           "stock": 420,
@@ -229,7 +235,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 30020,
           "type": "u16",
           "stock": 300,
@@ -327,32 +334,36 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip. Kept to multiples of 3 because it fires in three round bursts.",
           "off": 29156,
           "type": "u16",
           "stock": 36,
-          "min": 1,
+          "min": 3,
           "max": 360,
-          "step": 1
+          "step": 3,
+          "warn_over": 99
         },
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29154,
           "type": "u16",
           "stock": 144,
-          "min": 1,
+          "min": 3,
           "max": 1440,
-          "step": 7
+          "step": 3
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29152,
           "type": "u16",
           "stock": 108,
           "min": 0,
           "max": 1080,
-          "step": 5,
+          "step": 3,
           "warn_above": "total_max"
         },
         {
@@ -396,6 +407,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29006,
           "type": "u16",
           "stock": 15,
@@ -406,6 +418,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29004,
           "type": "u16",
           "stock": 75,
@@ -415,7 +428,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29002,
           "type": "u16",
           "stock": 45,
@@ -465,6 +479,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29354,
           "type": "u16",
           "stock": 40,
@@ -475,6 +490,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29352,
           "type": "u16",
           "stock": 160,
@@ -484,7 +500,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29350,
           "type": "u16",
           "stock": 120,
@@ -530,6 +547,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 30007,
           "type": "u16",
           "stock": 10,
@@ -540,6 +558,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 30005,
           "type": "u16",
           "stock": 60,
@@ -549,7 +568,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 30003,
           "type": "u16",
           "stock": 30,
@@ -600,6 +620,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29393,
           "type": "u16",
           "stock": 6,
@@ -610,6 +631,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29391,
           "type": "u16",
           "stock": 30,
@@ -619,7 +641,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29389,
           "type": "u16",
           "stock": 18,
@@ -669,6 +692,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29071,
           "type": "u16",
           "stock": 1,
@@ -679,6 +703,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29069,
           "type": "u16",
           "stock": 16,
@@ -688,7 +713,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29067,
           "type": "u16",
           "stock": 8,
@@ -738,6 +764,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29250,
           "type": "u16",
           "stock": 5,
@@ -748,6 +775,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29248,
           "type": "u16",
           "stock": 25,
@@ -757,7 +785,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29246,
           "type": "u16",
           "stock": 15,
@@ -807,6 +836,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29751,
           "type": "u16",
           "stock": 24,
@@ -817,6 +847,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29749,
           "type": "u16",
           "stock": 120,
@@ -826,7 +857,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29747,
           "type": "u16",
           "stock": 96,
@@ -876,6 +908,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29692,
           "type": "u16",
           "stock": 2,
@@ -886,6 +919,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29690,
           "type": "u16",
           "stock": 8,
@@ -895,7 +929,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29688,
           "type": "u16",
           "stock": 4,
@@ -945,6 +980,7 @@
         {
           "key": "magazine",
           "label": "Magazine",
+          "help": "Rounds in a clip before you have to reload.",
           "off": 29309,
           "type": "u16",
           "stock": 4,
@@ -955,6 +991,7 @@
         {
           "key": "total_max",
           "label": "Reserve ceiling",
+          "help": "Most ammo you can carry, magazine included.",
           "off": 29307,
           "type": "u16",
           "stock": 24,
@@ -964,7 +1001,8 @@
         },
         {
           "key": "initial",
-          "label": "Starting ammo",
+          "label": "Ammo from set dressing",
+          "help": "How much ammo comes with a weapon or ammo pack that was placed in the level. Weapons dropped by enemies keep whatever the enemy had left, so this does nothing for those.",
           "off": 29305,
           "type": "u16",
           "stock": 12,
@@ -988,6 +1026,305 @@
           "type": "u16",
           "stock": 4,
           "derived": true
+        }
+      ]
+    },
+    {
+      "id": "plasma_rifle",
+      "name": "Plasma rifle",
+      "subtitle": "Battery drain and heat",
+      "group": "paew",
+      "chunk": "b5dcca7b1661bf5200000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "What a shot costs in campaign. Lower lasts longer. Stock is about 400 shots.",
+          "off": 31930,
+          "type": "f32",
+          "stock": 0.0025,
+          "min": 0.0,
+          "max": 0.01,
+          "step": 2.5e-05
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Same thing outside campaign.",
+          "off": 31926,
+          "type": "f32",
+          "stock": 0.0025,
+          "min": 0.0,
+          "max": 0.01,
+          "step": 2.5e-05
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "One shot fills this much of the heat bar. Stock overheats after about 8.",
+          "off": 31918,
+          "type": "f32",
+          "stock": 0.13,
+          "min": 0.0,
+          "max": 0.52,
+          "step": 0.0013
+        }
+      ]
+    },
+    {
+      "id": "plasma_launcher",
+      "name": "Plasma launcher",
+      "subtitle": "Battery drain and heat",
+      "group": "paew",
+      "chunk": "77aa15ba23a8cc7600000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "What a shot costs in campaign. Lower lasts longer. Stock is about 12 shots.",
+          "off": 32160,
+          "type": "f32",
+          "stock": 0.0833333,
+          "min": 0.0,
+          "max": 0.3333332,
+          "step": 0.000833333
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Same thing outside campaign.",
+          "off": 32156,
+          "type": "f32",
+          "stock": 0.0833333,
+          "min": 0.0,
+          "max": 0.3333332,
+          "step": 0.000833333
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "One shot fills this much of the heat bar. Stock overheats after about 3.",
+          "off": 32148,
+          "type": "f32",
+          "stock": 0.4,
+          "min": 0.0,
+          "max": 1.6,
+          "step": 0.004
+        }
+      ]
+    },
+    {
+      "id": "beam_rifle",
+      "name": "Beam rifle",
+      "subtitle": "Battery drain and heat",
+      "group": "paew",
+      "chunk": "fc37c9a03996fc5100000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "What a shot costs in campaign. Lower lasts longer. Stock is about 20 shots.",
+          "off": 30016,
+          "type": "f32",
+          "stock": 0.05,
+          "min": 0.0,
+          "max": 0.2,
+          "step": 0.0005
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Same thing outside campaign. Note this one differs from the campaign value.",
+          "off": 30012,
+          "type": "f32",
+          "stock": 0.1,
+          "min": 0.0,
+          "max": 0.4,
+          "step": 0.001
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "One shot fills this much of the heat bar. Stock overheats after about 2.",
+          "off": 30004,
+          "type": "f32",
+          "stock": 0.65,
+          "min": 0.0,
+          "max": 2.6,
+          "step": 0.0065
+        }
+      ]
+    },
+    {
+      "id": "spartan_laser",
+      "name": "Spartan laser",
+      "subtitle": "Battery drain and heat",
+      "group": "paew",
+      "chunk": "e37ce4d0fe3c675000000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "What a shot costs in campaign. Lower lasts longer. Stock is about 20 shots.",
+          "off": 31367,
+          "type": "f32",
+          "stock": 0.05,
+          "min": 0.0,
+          "max": 0.2,
+          "step": 0.0005
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Same thing outside campaign.",
+          "off": 31363,
+          "type": "f32",
+          "stock": 0.05,
+          "min": 0.0,
+          "max": 0.2,
+          "step": 0.0005
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "One shot fills this much of the heat bar. Stock overheats after about 2.",
+          "off": 31355,
+          "type": "f32",
+          "stock": 1.0,
+          "min": 0.0,
+          "max": 4.0,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "focus_rifle",
+      "name": "Focus rifle",
+      "subtitle": "Battery drain and heat",
+      "group": "paew",
+      "chunk": "1aa37ecd7965b6ad00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "note": "Two chunks in the game hold focus rifle values, the same way the assault rifle has two. This is the one whose own paths are all focus rifle. If it does nothing in game, the other is 6afaf23b and its battery cost is 0.003.",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "What a shot costs in campaign. Lower lasts longer. Stock is about 620 shots.",
+          "off": 32457,
+          "type": "f32",
+          "stock": 0.0016125,
+          "min": 0.0,
+          "max": 0.00645,
+          "step": 1.6125e-05
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Same thing outside campaign.",
+          "off": 32453,
+          "type": "f32",
+          "stock": 0.0016125,
+          "min": 0.0,
+          "max": 0.00645,
+          "step": 1.6125e-05
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "One shot fills this much of the heat bar. Stock overheats after about 41.",
+          "off": 32445,
+          "type": "f32",
+          "stock": 0.025,
+          "min": 0.0,
+          "max": 0.1,
+          "step": 0.00025
+        }
+      ]
+    },
+    {
+      "id": "plasma_pistol",
+      "name": "Plasma pistol",
+      "subtitle": "Battery and heat, both triggers",
+      "group": "paew",
+      "chunk": "ce271d38312e3a3f00000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "note": "One barrel per trigger, so two sets of values. They share the same battery and the same heat bar, so making one cheap and the other expensive will behave oddly. Nothing stops you.",
+      "fields": [
+        {
+          "key": "campaign_age",
+          "label": "Battery per shot",
+          "help": "Normal fire, in campaign. Stock is about 200 shots.",
+          "off": 33966,
+          "type": "f32",
+          "stock": 0.005,
+          "min": 0.0,
+          "max": 0.02,
+          "step": 5e-05
+        },
+        {
+          "key": "age",
+          "label": "Battery per shot (multiplayer)",
+          "help": "Twice the campaign cost outside campaign.",
+          "off": 33962,
+          "type": "f32",
+          "stock": 0.01,
+          "min": 0.0,
+          "max": 0.04,
+          "step": 0.0001
+        },
+        {
+          "key": "heat",
+          "label": "Heat per shot",
+          "help": "Stock overheats after about 6 held down.",
+          "off": 33954,
+          "type": "f32",
+          "stock": 0.18,
+          "min": 0.0,
+          "max": 0.72,
+          "step": 0.0018
+        },
+        {
+          "key": "charged_campaign_age",
+          "label": "Charged shot battery",
+          "help": "The overcharge, in campaign. Stock is about 10 of them.",
+          "off": 34358,
+          "type": "f32",
+          "stock": 0.1,
+          "min": 0.0,
+          "max": 0.4,
+          "step": 0.001
+        },
+        {
+          "key": "charged_age",
+          "label": "Charged shot battery (multiplayer)",
+          "help": "The overcharge, outside campaign.",
+          "off": 34354,
+          "type": "f32",
+          "stock": 0.15,
+          "min": 0.0,
+          "max": 0.6,
+          "step": 0.0015
+        },
+        {
+          "key": "charged_heat",
+          "label": "Charged shot heat",
+          "help": "Stock is 1.0, so one charged shot fills the heat bar outright.",
+          "off": 34346,
+          "type": "f32",
+          "stock": 1.0,
+          "min": 0.0,
+          "max": 4.0,
+          "step": 0.01
         }
       ]
     }

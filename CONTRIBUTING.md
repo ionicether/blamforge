@@ -2,7 +2,7 @@
 
 Offsets. That's the useful thing.
 
-Fourteen targets is a start, not a finish. Every plasma weapon is missing, along with vehicles, grenades, and whatever else turns out to be sitting in there.
+Twenty targets is a start, not a finish. Vehicles, grenades, the energy sword, and whatever else turns out to be sitting in there.
 
 ## How the offsets get found
 
@@ -50,7 +50,15 @@ Please don't mark something confirmed you haven't played. That status is the onl
 
 `locked` fields aren't editable either, but for a different reason: changing them might break something. I have no idea what happens when the shotgun reloads more than one at a time. Even if it worked, it kinda breaks immersion.
 
+`warn_over` turns the row red past a fixed number, `warn_above` turns it red past another field's value. Neither stops you, they just say why it's a bad idea. The assault rifle and battle rifle use `warn_over` at 99 because the counter on the weapon model only has two digits and a 123 round magazine reads as 23.
+
 `mirror` writes the same value to a second offset. Some fields are stored as min/max pairs the game expects to be identical.
+
+Don't assume you know what a field does either. I called one "starting ammo"
+because the tag calls it "total initial", and it turned out to be how much
+ammo a weapon pickup gives you. The schema name is a hint, not a description.
+
+Don't assume you know the units. The assault rifle's rate of fire reads 12 and the devs' patch notes describe the intended rate as 10 rounds a second, which doesn't line up. Higher is definitely faster, tested by setting it to 1 and watching it crawl, but what the number actually measures is anyone's guess. Say what you tested and leave the rest alone.
 
 Keep slider ranges sane. Roughly 10x stock is about right. I originally set every magazine slider to the same wide range, which meant the sniper rifle (4 rounds stock) had a track running to 600. Technically it worked. In practice every value you'd actually want sat in the first half centimetre and you couldn't land on any of them.
 
