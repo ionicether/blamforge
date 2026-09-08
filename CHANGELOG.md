@@ -4,6 +4,17 @@ Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`. That's the one that
 decides whether any of this works.
 
+## 0.5.2
+
+Shield strength and health don't do anything. The value writes fine, the stock
+check passes, and you still die at exactly the same rate. Damage seems to come
+off as a percentage rather than a flat number, so doubling your shield also
+doubles what each hit takes and it cancels out.
+
+Left the sliders in with a note saying so, since the offsets are right and
+someone may work out what they're for. The four recharge fields underneath
+them do work.
+
 ## 0.5.1
 
 The DMR isn't in this game. Neither is the spartan laser, the focus rifle,

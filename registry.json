@@ -1,5 +1,5 @@
 {
-  "version": "0.5.1",
+  "version": "0.5.2",
   "build": "2026.08.11.1121610",
   "targets": [
     {
@@ -14,7 +14,7 @@
         {
           "key": "shield_vitality",
           "label": "Shield strength",
-          "help": "How much damage the shield absorbs before it breaks.",
+          "help": "How much damage the shield absorbs before it breaks. Changing this does write the value, but it doesn't seem to make you any tougher. Damage looks like it's taken as a percentage, so doubling the number doubles what each hit takes off and you die in the same number of shots. The recharge fields below do work.",
           "off": 40713,
           "type": "f32",
           "stock": 70,
@@ -26,7 +26,7 @@
         {
           "key": "body_vitality",
           "label": "Health",
-          "help": "Damage the body takes once shields are down.",
+          "help": "Damage the body takes once shields are down. Changing this does write the value, but it doesn't seem to make you any tougher. Damage looks like it's taken as a percentage, so doubling the number doubles what each hit takes off and you die in the same number of shots. The recharge fields below do work.",
           "off": 40693,
           "type": "f32",
           "stock": 45,

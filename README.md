@@ -59,7 +59,8 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 
 | | | |
 |---|---|---|
-| Master Chief | shields, health, recharge delay and time | tested |
+| Master Chief | recharge delay and time | tested |
+| Master Chief | shield strength, health | value changes, no effect in game |
 | Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
 | SMG | mag, reserve, set-dressing pickup ammo | tested |
 | Sentinel beam | battery drain, heat | tested |
