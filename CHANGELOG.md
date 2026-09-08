@@ -6,7 +6,7 @@ decides whether any of this works.
 
 ## 0.5.0
 
-Covenant weapons. Plasma rifle, plasma pistol, plasma launcher, beam rifle,
+Energy weapons. Plasma rifle, plasma pistol, plasma launcher, beam rifle,
 focus rifle, spartan laser. They don't have magazines, they spend a fraction
 of the battery per shot like the sentinel beam, so it's battery per shot and
 heat per shot instead of ammo.

@@ -1,6 +1,6 @@
 # Blamforge
 
-Sliders for Halo: Campaign Evolved. Magazine sizes, shield strength, how fast your shields come back, sentinel beam battery. Things you'd otherwise be changing with a hex editor.
+Sliders for Halo: Campaign Evolved. Magazine sizes, energy weapon drain, shield strength, shield recovery. Things you'd otherwise be changing with a hex editor.
 
 ![Blamforge](docs/screenshot.png)
 
