@@ -96,10 +96,10 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 | | | |
 |---|---|---|
 | Master Chief | shields, health, recharge delay and time | tested |
-| Assault rifle | mag, reserve, starting ammo, RPM, spread | tested |
-| SMG | mag, reserve, starting ammo | tested |
+| Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
+| SMG | mag, reserve, set-dressing pickup ammo | tested |
 | Sentinel beam | battery drain, heat | tested |
-| BR, DMR, spike rifle, shotgun, needler, sniper, rockets, GL, fuel rod, concussion | mag, reserve, starting ammo | offsets check out, haven't played them |
+| BR, DMR, spike rifle, shotgun, needler, sniper, rockets, GL, fuel rod, concussion | mag, reserve, set-dressing pickup ammo | offsets check out, haven't played them |
 | Plasma rifle, plasma pistol, plasma launcher, beam rifle, focus rifle, spartan laser | battery per shot, heat per shot | same |
 
 Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 10 shots for the plasma launcher and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
