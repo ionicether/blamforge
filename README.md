@@ -63,12 +63,14 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 | Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
 | SMG | mag, reserve, set-dressing pickup ammo | tested |
 | Sentinel beam | battery drain, heat | tested |
-| BR, DMR, spike rifle, shotgun, needler, sniper, rockets, GL, fuel rod, concussion | mag, reserve, set-dressing pickup ammo | offsets check out, haven't played them |
-| Plasma rifle, plasma pistol, plasma launcher, beam rifle, focus rifle, spartan laser | battery per shot, heat per shot | same |
+| BR, magnum, needle rifle, shotgun, needler, sniper, rockets, fuel rod, spiker | mag, reserve, set-dressing pickup ammo | offsets check out, haven't played them |
+| Plasma rifle, brute plasma rifle, plasma pistol, beam rifle | battery per shot, heat per shot | same |
 
-Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 10 shots for the plasma launcher and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
+Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 20 shots for the beam rifle and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
 
-Still missing: plasma repeater, energy sword, gravity hammer. The repeater's heat value reads zero, which is clearly incorrect. I will need to investigate.
+Still missing: energy sword, which has neither a magazine nor a battery, so there may not be anything to change.
+
+There are tags in the game files for weapons that aren't in the campaign at all, like a DMR, a spartan laser and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
 
 ## Uninstalling
 

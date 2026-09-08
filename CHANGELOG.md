@@ -4,9 +4,37 @@ Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`. That's the one that
 decides whether any of this works.
 
+## 0.5.1
+
+The DMR isn't in this game. Neither is the spartan laser, the focus rifle,
+the plasma launcher, the concussion rifle or the grenade launcher. All six
+have tags sitting in the game files with perfectly reasonable data in them,
+which is why they were in 0.5.0. I hadn't played the bonus missions and
+couldn't rule out that they turned up somewhere I hadn't been. Halo Studios
+publish the weapon list. None of them are on it. Gone.
+
+While checking that against the official list I found three that should have
+been in and weren't: the magnum, the needle rifle and the brute plasma rifle.
+
+The brute one is a separate tag from the plasma rifle, red, and there are two
+chunks both calling themselves plasma_rifle. The one that references
+plasma_rifle_red assets is the brute. I had the wrong one of the two in as the
+plain plasma rifle, so anyone who edited a plasma rifle in 0.5.0 was editing
+the red one and wondering why nothing happened.
+
+Also:
+
+- Spike rifle is called the Spiker.
+- Battery weapons had two drain sliders, one the tag calls CAMPAIGN and one
+  it doesn't. This game is campaign and co-op only so I don't know what reads
+  the second one. It's one slider now that writes both, which sidesteps the
+  question. Plasma pistol goes from six sliders to four.
+- The energy sword is the last thing on the official list that isn't in here.
+  It has neither a magazine nor a battery, so there may be nothing to change.
+
 ## 0.5.0
 
-Energy weapons. Plasma rifle, plasma pistol, plasma launcher, beam rifle,
+Covenant weapons. Plasma rifle, plasma pistol, plasma launcher, beam rifle,
 focus rifle, spartan laser. They don't have magazines, they spend a fraction
 of the battery per shot like the sentinel beam, so it's battery per shot and
 heat per shot instead of ammo.
@@ -15,10 +43,6 @@ Plasma pistol gets six sliders because it has two triggers and each one is its
 own barrel with its own values.
 
 None of them have been played yet.
-
-Campaign and multiplayer battery costs are usually the same number, but the
-beam rifle is 0.1 and 0.05, and the plasma pistol splits the same way. If you
-change one and nothing happens in game it's probably the other one.
 
 Focus rifle has two tags, same as the assault rifle did. Went with the one
 whose asset paths are all focus rifle and left a note in the app pointing at
