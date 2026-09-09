@@ -121,6 +121,6 @@ See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build`
 
 retoc and repak are [trumank's](https://github.com/trumank), and this doesn't work without them.
 
-The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
+The Chief recharge values were difficult to find, thankfully [Chance255](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
 
 MIT licensed.
