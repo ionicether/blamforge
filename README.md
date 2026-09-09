@@ -36,7 +36,7 @@ If that errors, install it with whatever your distro uses. `sudo pacman -S pytho
 
 ## Running it
 
-Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases) and unzip it wherever you like.
+Grab the latest zip from the [releases page](https://github.com/ionicether/blamforge/releases) or [NexusMods](https://www.nexusmods.com/halocampaignevolved/mods/322) and unzip it wherever you like.
 
 Then open a terminal in the folder that contains blamforge.py. On Windows, right-click the folder and pick "Open in Terminal", or shift-right-click and "Open PowerShell window here" if you're on 10. On Linux most file managers have "Open Terminal Here" in the right-click menu, or just `cd` to it.
 
