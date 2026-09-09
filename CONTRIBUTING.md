@@ -1,71 +1,69 @@
 # Contributing
 
-Offsets. That's the useful thing.
+Offsets. That's what's useful here.
 
-Twenty targets is a start, not a finish. Vehicles, grenades, the energy sword, and whatever else turns out to be sitting in there.
+17 targets so far. The energy sword is in the game and not in here, but it has no magazine and no battery so there might be nothing to change. Vehicles and grenades haven't been touched at all.
 
 ## How the offsets get found
 
-Gameplay values live in Blam tags, packed inside Unreal IoStore containers. Once a tag's out the values are just ints and floats at fixed offsets, so changing them is trivial. Knowing which offset is the entire problem.
+The values live in Blam tags, which sit inside Unreal IoStore containers. Get a tag out and the numbers are just ints and floats at fixed spots. Changing them is easy. Finding them is the whole job.
 
-Blam tags carry their own field names as plain strings:
+Blam tags carry their own field names as text, which helps:
 
 ```
 strings -a -t d <chunk> | grep -iE 'magazine|rounds|recharge|vitality'
 ```
 
-Now you know the tag has a field called "rounds loaded maximum". You still don't know where the value is. The names live in a schema block, the numbers live somewhere else entirely.
+That tells you the tag has a field called "rounds loaded maximum". It does not tell you where the number is. Names are in one block, values are somewhere else entirely.
 
-Diffing closes that gap. Two versions of the same tag (stock and modded, or a Grunt and an Elite) and the bytes that differ are the bytes holding values:
+Diffing is how you bridge it. Two versions of the same tag, stock and modded, or a Grunt and an Elite. Bytes that differ are the values:
 
 ```
 cmp -l stock.tag modded.tag | head -40
 ```
 
-Then read four bytes at each spot as a float and see if the number means anything. 60 sitting next to 600 is a magazine and its reserve. Two floats that come out as exactly 3.50 and 5.00 degrees once you convert from radians are a spread. Everything in the registry got found this way.
+Read four bytes at each spot as a float and see if the number means anything. 60 next to 600 is a magazine and its reserve. Two floats that come out to exactly 3.50 and 5.00 degrees once converted from radians are a spread.
 
-If someone's already made a mod that does what you want, diff theirs. The Chief shield offsets took about ten minutes that way, against hours of getting nowhere on the same problem from scratch.
+Best trick - if someone already made a mod that does what you want, diff theirs. The Chief recharge offsets took ten minutes that way. I'd spent hours on the same problem before that and got nowhere.
 
 ## Adding a target
 
-Rough shape of it:
+**Find the chunk.** `retoc unpack-raw` a container, then grep the output for something identifying. Weapon tags usually name their own animation graph, so `grep -l plasma_rifle *` gets close.
 
-**Find the chunk.** Unpack a container with `retoc unpack-raw`, then grep the output for a string that identifies what you're after. Weapon tags tend to name their own animation graph, so `grep -l plasma_rifle *` gets you close.
+**Find the fields.** `strings -a -t d <chunk>` gives you the schema. Diffing two variants of the same tag type gives you where the values sit.
 
-**Find the fields.** `strings -a -t d <chunk>` dumps the schema, which tells you what the tag *has*. Finding where the values sit is the other half, and diffing two variants of the same tag type is the way. The bytes that differ between a Grunt and an Elite are the bytes holding numbers.
+**Make sure the weapon is in the game.** There are tags for weapons that aren't in the campaign. I had a DMR and a spartan laser in here for a while. The data is right there and looks fine. Halo Studios publish the weapon list, check against that.
 
-**Check it's real.** Read your offset in a stock chunk and see if the value makes sense. A magazine reads 60, not 1536. A delay reads 6.0, not 6e-38. If you converted a float and got a round number of degrees, you've probably found a spread.
+**Sanity check the value.** A magazine reads 60, not 1536. A delay reads 6.0, not 6e-38. If you convert a float and get a round number of degrees, that's probably a spread.
 
-This is where it's easy to fool yourself. I once added a field because I assumed it matched its neighbour by symmetry, never actually read it, and shipped an offset with a wrong stock value that made the whole tag fail verification. Read the byte.
+Read the byte. Don't work it out from the byte next to it. I did that once and shipped an offset that made the whole tag fail verification.
 
-**Add it to `registry.json`** with `"status": "derived"`.
+**Add it to `registry.json`** as `"status": "derived"`.
 
-**Then play it.** Build the mod, install it, load a level, check the thing actually changed. If it did, flip the status to `"confirmed"` and say so in the PR.
+**Then go play it.** Install it, load a level, check the thing changed. If it did, flip it to `"confirmed"` and say so in the PR.
 
-Please don't mark something confirmed you haven't played. That status is the only signal anyone has about whether an entry has ever been off the page, and it stops meaning anything the moment it's guessed at.
+Don't mark something confirmed you haven't played. That flag is the only way anyone knows whether an entry has ever been off the page.
 
 ## Field notes
 
-`derived` fields aren't editable, they're computed from other fields. Ammo blocks have a reserve count that has to equal ceiling minus magazine or the game desyncs.
+`derived` fields aren't editable, they're worked out from other fields. Ammo blocks have a reserve count that has to be ceiling minus magazine or the game desyncs.
 
-`locked` fields aren't editable either, but for a different reason: changing them might break something. I have no idea what happens when the shotgun reloads more than one at a time. Even if it worked, it kinda breaks immersion.
+`locked` fields aren't editable because changing them might break something. No idea what the shotgun does if it reloads more than one shell at a time. Even if it worked, it kinda breaks immersion.
 
-`warn_over` turns the row red past a fixed number, `warn_above` turns it red past another field's value. Neither stops you, they just say why it's a bad idea. The assault rifle and battle rifle use `warn_over` at 99 because the counter on the weapon model only has two digits and a 123 round magazine reads as 23.
+`warn_over` turns the row red past a set number. `warn_above` turns it red past another field's value. Neither stops you, they just say why it's a bad idea. AR and BR use `warn_over` at 99 because the counter on the gun is two digits and 123 rounds shows as 23.
 
-`mirror` writes the same value to a second offset. Some fields are stored as min/max pairs the game expects to be identical.
+`mirror` writes the same value to a second offset. Some fields are stored twice and the game wants them matching.
 
-Don't assume you know what a field does either. I called one "starting ammo"
-because the tag calls it "total initial", and it turned out to be how much
-ammo a weapon pickup gives you. The schema name is a hint, not a description.
+The schema name is a hint, not a description. "Total initial" turned out to be how much ammo a weapon comes with when it's set dressing, not what you start a level with.
 
-Don't assume you know the units. The assault rifle's rate of fire reads 12 and the devs' patch notes describe the intended rate as 10 rounds a second, which doesn't line up. Higher is definitely faster, tested by setting it to 1 and watching it crawl, but what the number actually measures is anyone's guess. Say what you tested and leave the rest alone.
+Same goes for units. The AR's rate of fire reads 12, the devs say the intended rate is 10 rounds a second, and those don't line up. Higher is faster, I checked by setting it to 1 and watching it crawl. What the number actually measures, no idea. Write down what you tested and leave the rest.
 
-Keep slider ranges sane. Roughly 10x stock is about right. I originally set every magazine slider to the same wide range, which meant the sniper rifle (4 rounds stock) had a track running to 600. Technically it worked. In practice every value you'd actually want sat in the first half centimetre and you couldn't land on any of them.
+Keep slider ranges around 10x stock. Every magazine slider used to have the same range, which put the sniper rifle (4 rounds) on a track running to 600. Every useful value was in the first half centimetre.
 
 ## Don't commit game files
 
-No chunks, no containers, no `.tag` files. `.gitignore` covers the obvious cases but glance at your diff before pushing. Shipping offsets is fine. Shipping Bungie's data is how repos get taken down.
+No chunks, no containers, no `.tag` files. `.gitignore` catches the obvious ones but look at your diff before pushing. Offsets are fine to ship. Bungie's data is not.
 
 ## Something broken?
 
-Tell me the game build, which target, and what the verification error said. Blamforge prints exactly which field disagreed and by how much, so pasting that is usually enough.
+Tell me the game build, which target, and what the verification error said. Blamforge names the field that disagreed and shows both values, so pasting that is usually enough.
