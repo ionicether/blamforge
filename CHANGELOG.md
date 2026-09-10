@@ -12,6 +12,8 @@ Three of them ramp (needler, plasma rifle, brute plasma rifle), so those get two
 
 Single shot weapons don't get one. 
 
+Added grenade count
+
 ## 0.5.2
 
 Shield strength and health don't do anything. The value writes fine, the stock
