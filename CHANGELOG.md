@@ -47,15 +47,6 @@ plasma_rifle_red assets is the brute. I had the wrong one of the two in as the
 plain plasma rifle, so anyone who edited a plasma rifle in 0.5.0 was editing
 the red one and wondering why nothing happened.
 
-Also:
-
-- Spike rifle is called the Spiker.
-- Battery weapons had two drain sliders, one the tag calls CAMPAIGN and one
-  it doesn't. This game is campaign and co-op only so I don't know what reads
-  the second one. It's one slider now that writes both, which sidesteps the
-  question. Plasma pistol goes from six sliders to four.
-- The energy sword is the last thing on the official list that isn't in here.
-  It has neither a magazine nor a battery, so there may be nothing to change.
 
 ## 0.5.0
 
@@ -72,21 +63,6 @@ None of them have been played yet.
 Focus rifle has two tags, same as the assault rifle did. Went with the one
 whose asset paths are all focus rifle and left a note in the app pointing at
 the other.
-
-Other things:
-
-- Retoc downloads itself if you don't have it. Says what it's fetching first,
-  puts it next to blamforge.py rather than on PATH, and runs it once to check
-  it works. The linux builds link against system glibc, so on an old distro it
-  lands fine and then dies halfway through extracting the game. Better to find
-  out at the download.
-- It remembers what you installed. Saved on install, not while you're
-  dragging. Reset goes back to stock, Remove forgets it.
-- Help text on every field. Most of them had none.
-- Battle rifle magazine steps in threes. Three round bursts.
-- AR and BR go red past 99. The counter on the side of the gun is two digits,
-  so 123 rounds shows as 23. The ammo is really there.
-- Cache tells you what's missing instead of dumping you back at setup.
 
 ### Fixed
 
@@ -125,9 +101,6 @@ Everything in here came out of using 0.3 for an afternoon.
 
 ### Fixed
 
-- Assault rifle was pointing at the wrong tag. There are two. I picked the
-  one from a mod file and called it stock without checking the actual game.
-  It verified. It installed. It did nothing. Fixed.
 - Dropped the field at 0x0B53B. Had it down as 4.0. It's 0.04. I never read
   the byte, I just assumed it matched its neighbour, and every Chief tag
   failed verification because of it. Also it doesn't change between stock and
