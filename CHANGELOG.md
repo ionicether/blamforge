@@ -14,6 +14,10 @@ Single shot weapons don't get one.
 
 Added grenade count
 
+The text file in each mod folder was saying 0.4.0 no matter what version you were on. It reads the real one now.
+
+uninstall.py is cleanse.py now.
+
 ## 0.5.2
 
 Shield strength and health don't do anything. The value writes fine, the stock

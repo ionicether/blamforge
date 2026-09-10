@@ -33,7 +33,6 @@ import urllib.parse
 import webbrowser
 
 APP = "blamforge"
-VERSION = "0.4.0"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -395,11 +394,11 @@ def write_note(dest, t, values, patched):
     """Leave a plain text record in the mod folder.
 
     Mostly so that in six months you can look at a folder and know what's in
-    it. uninstall.py only cares that the file exists, not what it says, so
+    it. cleanse.py only cares that the file exists, not what it says, so
     there's nothing here that has to parse.
     """
     lines = [
-        "%s %s" % (APP, VERSION),
+        "%s %s" % (APP, REG.get("version", "?")),
         t["name"],
         "installed %s" % time.strftime("%Y-%m-%d %H:%M"),
         "game build %s" % REG.get("build", "unknown"),
@@ -432,7 +431,7 @@ def write_note(dest, t, values, patched):
     lines += [
         "",
         "Delete this whole folder to put it back the way it was, or run",
-        "uninstall.py to find and remove every folder with one of these in it.",
+        "cleanse.py to find and remove every folder with one of these in it.",
         "",
     ]
     with open(os.path.join(dest, NOTE), "w", encoding="utf-8") as f:
