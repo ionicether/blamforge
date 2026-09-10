@@ -1,6 +1,6 @@
 # Blamforge
 
-Sliders for Halo: Campaign Evolved. Magazine sizes, energy weapon drain, shield strength, shield recovery. Things you'd otherwise be changing with a hex editor.
+Sliders for Halo: Campaign Evolved. Magazine sizes, energy weapon drain/heat, shield strength, shield recovery, health, health recovery. Things you'd otherwise be changing with a hex editor.
 
 ![Blamforge](docs/screenshot.png)
 
@@ -8,7 +8,7 @@ Sliders for Halo: Campaign Evolved. Magazine sizes, energy weapon drain, shield 
 
 **Python.** That's the only thing you have to install.
 
-Blamforge also needs [retoc](https://github.com/trumank/retoc), which does the actual reading and writing of the game's containers. If you don't already have it, Blamforge offers to download it the first time you run it. It tells you exactly what file it's fetching and from where, puts it in its own folder rather than on your PATH, and checks it runs before carrying on. Nothing else to do.
+Blamforge also needs (and automatically downloads) [retoc](https://github.com/trumank/retoc), which does the actual reading and writing of the game's containers. Blamforge offers to download it the first time you run it. It tells you exactly what file it's fetching and from where, puts it in its own folder, and checks it runs before carrying on.
 
 Blamforge itself is the offsets (which took a while to find) and a web UI to wrangle them with.
 
@@ -74,27 +74,26 @@ Battery weapons have no magazine. A shot costs a fraction of the battery, and st
 
 Still missing: energy sword, which has neither a magazine nor a battery, so there may not be anything to change.
 
-There are tags in the game files for weapons that aren't in the campaign at all, like a DMR, a spartan laser and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
+>There are tags in the game files for weapons that aren't in the campaign (because apparently they worked off of a build of Halo: Reach) at all, like a DMR, a spartan laser, and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
 
 ## About rate of fire
 
-The number in the tag doesn't match what the developers say the weapon does, and I don't know why.
-
-The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time. It will probably take someone smarter than me to figure it out.
+The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time. 
+It will probably take someone smarter than me to figure it out.
 
 ## Co-op
 
 Not a stinkin' clue. Nobody has tried any of this in co-op and I don't know whether it's host file driven or not. If you try it, please reach out to me.
 
-## Uninstalling
+## Cleansing
 
-Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever you changed, with a `blamforge.txt` (don't delete this file, the uninstall script requires it) in it saying what was changed and when. The Remove button deletes the folder, and so does deleting it yourself.
+Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever you changed, with a `blamforge.txt` (don't delete this file, cleanse.py requires it) in it saying what was changed and when. The Remove button deletes the folder, and so does deleting it yourself.
 
 If you've binned Blamforge and still have mods installed:
 
-Windows: `python uninstall.py`
+Windows: `python cleanse.py`
 
-Linux: `python3 uninstall.py`
+Linux: `python3 cleanse.py`
 
 That lists what's there. Add a name to remove one, or `--all` for everything. It only touches folders with that text file in them, so nobody else's mods get caught up in it.
 

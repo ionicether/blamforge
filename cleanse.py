@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-uninstall.py - remove mods Blamforge installed
+cleanse.py - remove mods Blamforge installed
 
 Every folder Blamforge writes gets a blamforge.txt in it. This looks for
 those and deletes the folders they're in. Nothing else is touched, so mods
@@ -9,9 +9,9 @@ from anywhere else are left alone.
 Folders are named bf_<something>, but older versions didn't use the prefix,
 so this goes by the text file rather than the name.
 
-    python3 uninstall.py                    # list what's installed
-    python3 uninstall.py --all              # remove all of it
-    python3 uninstall.py assault_rifle      # remove one
+    python3 cleanse.py                    # list what's installed
+    python3 cleanse.py --all              # remove all of it
+    python3 cleanse.py assault_rifle      # remove one
 
 You can also just delete the folders yourself. That's all this does.
 """
