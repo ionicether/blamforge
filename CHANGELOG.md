@@ -4,6 +4,32 @@ Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`. That's the one that
 decides whether any of this works.
 
+## 0.6.0
+
+Rate of fire on eight more weapons. SMG, battle rifle, spiker, needle rifle,
+magnum, needler, plasma rifle, brute plasma rifle.
+
+Three of them ramp (needler, plasma rifle, brute plasma rifle), so those get
+two sliders instead of one. Needler goes 7 to 10, which is exactly how it
+feels, so the offsets are probably right.
+
+Single shot weapons don't get one. Shotgun, sniper, rockets, fuel rod, beam
+rifle and plasma pistol all have a field sitting there reading 30, but 30 is
+the same number that turns up in the runtime block on everything else, so it's
+almost certainly a default nobody reads. Sentinel beam reads 30 too and I've
+left it out for now, though it's a held beam so 30 might actually mean
+something there. Someone should test it.
+
+Also:
+
+- Grenades. How many of each you can carry, stock is 4. Slider goes to 40.
+- That one edits the globals tag instead of a weapon, so the mod it builds is
+  about a megabyte. The weapon ones are thirty kilobytes.
+- Two grenade entries and I don't know which is frag. Set them different and
+  find out.
+- Readme note about the AR reading 12 when the devs say 10. Still no idea.
+- Readme note about co-op. Nobody's tried it.
+
 ## 0.5.2
 
 Shield strength and health don't do anything. The value writes fine, the stock

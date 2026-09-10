@@ -1,5 +1,5 @@
 {
-  "version": "0.5.2",
+  "version": "0.6.0",
   "build": "2026.08.11.1121610",
   "targets": [
     {
@@ -260,6 +260,19 @@
           "type": "u16",
           "stock": 60,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "How fast it fires. Higher is faster. What the number actually measures isn't clear, see the readme.",
+          "off": 30583,
+          "type": "f32",
+          "stock": 18.0,
+          "min": 0.5,
+          "max": 72,
+          "step": 0.18,
+          "unit": "/s",
+          "mirror": 30587
         }
       ]
     },
@@ -332,6 +345,19 @@
           "type": "u16",
           "stock": 12,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "How fast it fires. Higher is faster. What the number actually measures isn't clear, see the readme.",
+          "off": 30324,
+          "type": "f32",
+          "stock": 3.5,
+          "min": 0.5,
+          "max": 14.0,
+          "step": 0.035,
+          "unit": "/s",
+          "mirror": 30328
         }
       ]
     },
@@ -404,6 +430,19 @@
           "type": "u16",
           "stock": 21,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "How fast it fires. Higher is faster. What the number actually measures isn't clear, see the readme.",
+          "off": 30042,
+          "type": "f32",
+          "stock": 4.0,
+          "min": 0.5,
+          "max": 16,
+          "step": 0.04,
+          "unit": "/s",
+          "mirror": 30046
         }
       ]
     },
@@ -514,6 +553,19 @@
           "type": "u16",
           "stock": 36,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "How fast it fires. Higher is faster. What the number actually measures isn't clear, see the readme.",
+          "off": 29826,
+          "type": "f32",
+          "stock": 15.0,
+          "min": 0.5,
+          "max": 60,
+          "step": 0.15,
+          "unit": "/s",
+          "mirror": 29830
         }
       ]
     },
@@ -586,6 +638,19 @@
           "type": "u16",
           "stock": 40,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire",
+          "label": "Rate of fire",
+          "help": "How fast it fires. Higher is faster. What the number actually measures isn't clear, see the readme.",
+          "off": 29820,
+          "type": "f32",
+          "stock": 8.0,
+          "min": 0.5,
+          "max": 32,
+          "step": 0.08,
+          "unit": "/s",
+          "mirror": 29824
         }
       ]
     },
@@ -799,6 +864,30 @@
           "type": "u16",
           "stock": 24,
           "derived": true
+        },
+        {
+          "key": "rate_of_fire_min",
+          "label": "Rate of fire (starting)",
+          "help": "Where it starts when you pull the trigger. Higher is faster.",
+          "off": 30318,
+          "type": "f32",
+          "stock": 7.0,
+          "min": 0.5,
+          "max": 28,
+          "step": 0.07,
+          "unit": "/s"
+        },
+        {
+          "key": "rate_of_fire_max",
+          "label": "Rate of fire (held)",
+          "help": "Where it gets to if you keep holding. This weapon speeds up as it fires, which is why there are two.",
+          "off": 30322,
+          "type": "f32",
+          "stock": 10.0,
+          "min": 0.5,
+          "max": 40,
+          "step": 0.1,
+          "unit": "/s"
         }
       ]
     },
@@ -977,6 +1066,30 @@
           "min": 0.0,
           "max": 0.5,
           "step": 0.00125
+        },
+        {
+          "key": "rate_of_fire_min",
+          "label": "Rate of fire (starting)",
+          "help": "Where it starts when you pull the trigger. Higher is faster.",
+          "off": 31569,
+          "type": "f32",
+          "stock": 5.0,
+          "min": 0.5,
+          "max": 20,
+          "step": 0.05,
+          "unit": "/s"
+        },
+        {
+          "key": "rate_of_fire_max",
+          "label": "Rate of fire (held)",
+          "help": "Where it gets to if you keep holding. This weapon speeds up as it fires, which is why there are two.",
+          "off": 31573,
+          "type": "f32",
+          "stock": 10.0,
+          "min": 0.5,
+          "max": 40,
+          "step": 0.1,
+          "unit": "/s"
         }
       ]
     },
@@ -1012,6 +1125,30 @@
           "min": 0.0,
           "max": 0.52,
           "step": 0.0013
+        },
+        {
+          "key": "rate_of_fire_min",
+          "label": "Rate of fire (starting)",
+          "help": "Where it starts when you pull the trigger. Higher is faster.",
+          "off": 31582,
+          "type": "f32",
+          "stock": 10.0,
+          "min": 0.5,
+          "max": 40,
+          "step": 0.1,
+          "unit": "/s"
+        },
+        {
+          "key": "rate_of_fire_max",
+          "label": "Rate of fire (held)",
+          "help": "Where it gets to if you keep holding. This weapon speeds up as it fires, which is why there are two.",
+          "off": 31586,
+          "type": "f32",
+          "stock": 12.0,
+          "min": 0.5,
+          "max": 48,
+          "step": 0.12,
+          "unit": "/s"
         }
       ]
     },
@@ -1104,6 +1241,42 @@
           "min": 0.0,
           "max": 4.0,
           "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "grenades",
+      "name": "Grenades",
+      "subtitle": "How many you can carry",
+      "group": "gtam",
+      "chunk": "6104971f0ca5be7800000002",
+      "container": "pakchunk0-Windows",
+      "status": "derived",
+      "note": "This one edits the game's globals tag rather than a weapon, so the mod it builds is a lot bigger than the others. Which entry is frag and which is plasma I'm not certain of, frag is probably first. Set them to different numbers and you'll find out quickly.",
+      "fields": [
+        {
+          "key": "grenade_1",
+          "label": "First type (probably frag)",
+          "help": "How many you can carry. Stock is 4.",
+          "off": 85978,
+          "type": "u16",
+          "stock": 4,
+          "mirror": 85980,
+          "min": 0,
+          "max": 40,
+          "step": 1
+        },
+        {
+          "key": "grenade_2",
+          "label": "Second type (probably plasma)",
+          "help": "How many you can carry. Stock is 4.",
+          "off": 86054,
+          "type": "u16",
+          "stock": 4,
+          "mirror": 86056,
+          "min": 0,
+          "max": 40,
+          "step": 1
         }
       ]
     }

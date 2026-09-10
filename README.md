@@ -60,12 +60,15 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 | | | |
 |---|---|---|
 | Master Chief | recharge delay and time | tested |
-| Master Chief | shield strength, health | value changes, no effect in game as damage appears to be percentage based (maybe, idk for sure yet) |
+| Master Chief | shield strength, health | value changes, no effect in game |
 | Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
-| SMG | mag, reserve, set-dressing pickup ammo | tested |
+| SMG | mag, reserve, set-dressing pickup ammo, rate of fire | tested |
 | Sentinel beam | battery drain, heat | tested |
-| BR, magnum, needle rifle, shotgun, needler, sniper, rockets, fuel rod, spiker | mag, reserve, set-dressing pickup ammo | offsets check out, haven't played them |
-| Plasma rifle, brute plasma rifle, plasma pistol, beam rifle | battery per shot, heat per shot | same |
+| BR, magnum, needle rifle, needler, spiker | mag, reserve, set-dressing pickup ammo, rate of fire | offsets check out, haven't played them |
+| Shotgun, sniper, rockets, fuel rod | mag, reserve, set-dressing pickup ammo | same |
+| Plasma rifle, brute plasma rifle | battery per shot, heat per shot, rate of fire | same |
+| Plasma pistol, beam rifle | battery per shot, heat per shot | same |
+| Grenades | how many of each you can carry | same |
 
 Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 20 shots for the beam rifle and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
 
@@ -73,9 +76,19 @@ Still missing: energy sword, which has neither a magazine nor a battery, so ther
 
 There are tags in the game files for weapons that aren't in the campaign at all, like a DMR, a spartan laser and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
 
+## About rate of fire
+
+The number in the tag doesn't match what the developers say the weapon does, and I don't know why.
+
+The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time. It will probably take someone smarter than me to figure it out.
+
+## Co-op
+
+Not a stinkin' clue. Nobody has tried any of this in co-op and I don't know whether it's host file driven or not. If you try it, please reach out to me.
+
 ## Uninstalling
 
-Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever you changed, with a `blamforge.txt` in it saying what was changed and when. The Remove button deletes the folder, and so does deleting it yourself.
+Each mod is its own folder under `Content/Paks`, named `bf_` and then whatever you changed, with a `blamforge.txt` (don't delete this file, the uninstall script requires it) in it saying what was changed and when. The Remove button deletes the folder, and so does deleting it yourself.
 
 If you've binned Blamforge and still have mods installed:
 
@@ -101,7 +114,7 @@ Finding new offsets is written up in CONTRIBUTING.md.
 
 Offsets were checked against build 2026.08.11.1121610. I cannot promis it will work beyond that.
 
-A fair bit isn't reachable from tags at all. Damage resistance, the difficulty skulls (you can toggle the skull effects though), anything to do with player traits. That stuff lives in Unreal-side code and, as far as I'm aware, no amount of tag editing gets near it. [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) is the tool for that, not this one. Checkout NexusMods for UE4SS mods.
+A fair bit isn't reachable from tags at all. Damage resistance, the difficulty skulls, anything to do with player traits. That stuff lives in Unreal-side code and, as far as I'm aware, no amount of tag editing gets near it. [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) is the tool for that, not this one. Checkout NexusMods for UE4SS mods.
 
 Linux users - You prob know better, but I didn't think about this at the time. If you go extracting containers yourself, don't do it into `/tmp`. On a lot of setups that's a RAM disk, and pakchunk0 is 106,000 files. It'll fill up and truncate silently, and you'll spend an evening convinced the file you're looking for doesn't exist. Ask me how I know.
 
@@ -121,6 +134,6 @@ See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build`
 
 retoc and repak are [trumank's](https://github.com/trumank), and this doesn't work without them.
 
-The Chief recharge values were difficult to find, thankfully [Chance255](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
+The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
 
 MIT licensed.
