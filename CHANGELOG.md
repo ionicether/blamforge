@@ -64,6 +64,8 @@ Focus rifle has two tags, same as the assault rifle did. Went with the one
 whose asset paths are all focus rifle and left a note in the app pointing at
 the other.
 
+blamforge.py now downloads retoc if it's not installed.
+
 ### Fixed
 
 - "Starting ammo" is how much ammo a weapon or ammo pack comes with when it's
