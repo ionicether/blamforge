@@ -59,8 +59,7 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 
 | | | |
 |---|---|---|
-| Master Chief | recharge delay and time | tested |
-| Master Chief | shield strength, health | value changes, no effect in game |
+| Master Chief | shield and health recovery timing | tested |
 | Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
 | SMG | mag, reserve, set-dressing pickup ammo, rate of fire | tested |
 | Sentinel beam | battery drain, heat | tested |
@@ -80,6 +79,10 @@ Still missing: energy sword, which has neither a magazine nor a battery, so ther
 
 The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time. 
 It will probably take someone smarter than me to figure it out.
+
+## Health and shield amounts
+
+You can't change them. Three fields in the tag look like they should do it and none of them work, because the engine rebuilds the damage data when the tag loads. The recharge sliders are fine.
 
 ## Co-op
 
@@ -131,8 +134,12 @@ See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build`
 
 ## Thanks
 
-retoc and repak are [trumank's](https://github.com/trumank), and this doesn't work without them.
+[retoc](https://github.com/trumank/retoc) and [repak](https://github.com/trumank/repak) are [trumank's](https://github.com/trumank), and this doesn't work without them.
 
 The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
 
-MIT licensed.
+[blam-tags](https://github.com/camden-smallwood/blam-tags) by [Camden Smallwood](https://github.com/camden-smallwood). I used it to validate the shield and vitality offsets I couldn't figure out, which is how I worked out why they weren't doing anything.
+
+## License
+
+MIT

@@ -1,40 +1,16 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "build": "2026.08.11.1121610",
   "targets": [
     {
       "id": "chief",
       "name": "Master Chief",
-      "subtitle": "Shields, health, and recovery timing",
+      "subtitle": "Shield and health recovery timing",
       "group": "tmlh",
       "chunk": "2e29b20bc2cee08400000002",
       "container": "pakchunk0-Windows",
       "status": "confirmed",
       "fields": [
-        {
-          "key": "shield_vitality",
-          "label": "Shield strength",
-          "help": "How much damage the shield absorbs before it breaks. Changing this does write the value, but it doesn't seem to make you any tougher. Damage looks like it's taken as a percentage, so doubling the number doubles what each hit takes off and you die in the same number of shots. The recharge fields below do work.",
-          "off": 40713,
-          "type": "f32",
-          "stock": 70,
-          "min": 10,
-          "max": 7000,
-          "step": 10,
-          "unit": ""
-        },
-        {
-          "key": "body_vitality",
-          "label": "Health",
-          "help": "Damage the body takes once shields are down. Changing this does write the value, but it doesn't seem to make you any tougher. Damage looks like it's taken as a percentage, so doubling the number doubles what each hit takes off and you die in the same number of shots. The recharge fields below do work.",
-          "off": 40693,
-          "type": "f32",
-          "stock": 45,
-          "min": 5,
-          "max": 4500,
-          "step": 5,
-          "unit": ""
-        },
         {
           "key": "shield_delay",
           "label": "Shield recharge delay",
@@ -83,7 +59,8 @@
           "step": 0.05,
           "unit": "s"
         }
-      ]
+      ],
+      "note": "Only the recovery timing is here. How much damage you can take isn't reachable from this tag. There are three fields that look like it and none of them do anything, see the readme."
     },
     {
       "id": "assault_rifle",

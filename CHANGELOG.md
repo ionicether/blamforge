@@ -1,8 +1,25 @@
 # Changelog
 
 Versions here are Blamforge's own. The game build these were verified against
-is separate and lives in `registry.json` under `build`. That's the one that
-decides whether any of this works.
+is separate and lives in `registry.json` under `build`.
+
+## 0.6.1
+
+Took out the sliders for how much health and shield you have. The recharge
+ones are still there. They never worked and now I know why, or at least know
+it isn't fixable from the tag.
+
+[Camden](https://github.com/camden-smallwood) pointed me at
+[blam-tags](https://github.com/camden-smallwood/blam-tags), to validate
+that this was a lost cause.
+
+The live block is
+`damage info`, and it has a `maximum vitality` of 70 with the body and shield
+sections taking 0.642857 and 1 of it, which is the 45 and 70 you'd expect.
+
+Tried all three. Ten times stock on any of them and you die after the same
+number of hits. So it's postprocess rebuilding the damage data at load, so
+dead-end on the tag side.
 
 ## 0.6.0
 
@@ -10,7 +27,7 @@ Rate of fire on eight more weapons. SMG, battle rifle, spiker, needle rifle, mag
 
 Three of them ramp (needler, plasma rifle, brute plasma rifle), so those get two sliders instead of one.
 
-Single shot weapons don't get one. 
+Single shot weapons don't get one.
 
 Added grenade count
 
@@ -63,8 +80,6 @@ None of them have been played yet.
 Focus rifle has two tags, same as the assault rifle did. Went with the one
 whose asset paths are all focus rifle and left a note in the app pointing at
 the other.
-
-blamforge.py now downloads retoc if it's not installed.
 
 ### Fixed
 
