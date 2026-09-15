@@ -10,7 +10,7 @@ folder in the middle of the path, so it's
 `XboxGames\Halo- Campaign Evolved\Content\Meteorite\Content\Paks` instead
 of what Steam does. Handles both now.
 
-Also looks on every drive letter that exists instead of guessing at C, D and
+Also looks on every drive letter that exists instead of guessing at C, D, and
 E. And you can paste either the game folder or the Paks folder, which was
 always true but the prompt only mentioned one of them.
 
