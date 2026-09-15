@@ -161,13 +161,50 @@ def fetch_retoc(progress):
 # with these, hence matching on the exact size rather than just any .pak.
 PAK_SIZE = 339
 
-GAME_HINTS = [
+# Where the Paks folder sits relative to whatever you point at. Steam puts
+# Meteorite straight in the game folder; the Xbox app wraps it in another
+# Content directory.
+PAKS_SHAPES = [
+    ("Meteorite", "Content", "Paks"),
+    ("Content", "Meteorite", "Content", "Paks"),
+    (),
+]
+
+LINUX_HINTS = [
     "~/.local/share/Steam/steamapps/common/Halo Campaign Evolved",
     "~/.steam/steam/steamapps/common/Halo Campaign Evolved",
-    "C:/Program Files (x86)/Steam/steamapps/common/Halo Campaign Evolved",
-    "D:/SteamLibrary/steamapps/common/Halo Campaign Evolved",
-    "E:/SteamLibrary/steamapps/common/Halo Campaign Evolved",
 ]
+
+# Tried under every drive letter that actually exists, rather than guessing
+# at C, D and E and giving up. The Xbox app writes the game name with a
+# hyphen because a colon isn't allowed in a path.
+WINDOWS_HINTS = [
+    "Program Files (x86)/Steam/steamapps/common/Halo Campaign Evolved",
+    "Program Files/Steam/steamapps/common/Halo Campaign Evolved",
+    "SteamLibrary/steamapps/common/Halo Campaign Evolved",
+    "Games/Steam/steamapps/common/Halo Campaign Evolved",
+    "XboxGames/Halo- Campaign Evolved",
+    "XboxGames/Halo Campaign Evolved",
+]
+
+
+def drives():
+    """Drive letters that exist. Empty on anything that isn't Windows."""
+    if os.name != "nt":
+        return []
+    out = []
+    for c in "CDEFGHIJKLMNOPQRSTUVWXYZ":
+        if os.path.isdir(c + ":\\"):
+            out.append(c + ":")
+    return out
+
+
+def game_hints():
+    hints = [os.path.expanduser(p) for p in LINUX_HINTS]
+    for d in drives():
+        for p in WINDOWS_HINTS:
+            hints.append(os.path.join(d + os.sep, *p.split("/")))
+    return hints
 
 
 # ----------------------------------------------------------------- registry
@@ -198,12 +235,18 @@ TARGETS = {t["id"]: t for t in REG["targets"]}
 # --------------------------------------------------------------- game files
 
 def find_game(given=None):
-    roots = [given] if given else [os.path.expanduser(p) for p in GAME_HINTS]
+    """Work out where the game is.
+
+    Takes either the game folder or the Paks folder itself, and copes with
+    both the Steam and Xbox app layouts.
+    """
+    roots = [given] if given else game_hints()
     for r in roots:
         if not r:
             continue
         r = os.path.expanduser(r)
-        for cand in (os.path.join(r, "Meteorite", "Content", "Paks"), r):
+        for shape in PAKS_SHAPES:
+            cand = os.path.join(r, *shape) if shape else r
             if os.path.exists(os.path.join(cand, CONTAINER)):
                 return r, cand
     return None, None

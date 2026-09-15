@@ -3,6 +3,19 @@
 Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`.
 
+## 0.6.2
+
+Game Pass copies weren't being found. The Xbox app puts another Content
+folder in the middle of the path, so it's
+`XboxGames\Halo- Campaign Evolved\Content\Meteorite\Content\Paks` instead
+of what Steam does. Handles both now.
+
+Also looks on every drive letter that exists instead of guessing at C, D and
+E. And you can paste either the game folder or the Paks folder, which was
+always true but the prompt only mentioned one of them.
+
+Thanks to SkrappyIE, NagatoZeta, and SebSpy7IISaidWithThe7II for reporting it.
+
 ## 0.6.1
 
 Took out the sliders for how much health and shield you have. The recharge

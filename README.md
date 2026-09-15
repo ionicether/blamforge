@@ -46,7 +46,7 @@ Linux: `python3 blamforge.py`
 
 A browser tab opens, then...
 
-1. It looks for your Steam install. If it can't find it, paste the folder that has `Meteorite/Content/Paks` in it.
+1. It looks for the game. If it can't find it, paste either the game folder or the `Paks` folder inside it. Steam and Game Pass put them in different places, so either works.
 2. First time only, it unpacks the game container to get at the tags. A minute or two. It keeps about a dozen files and bins the rest. Your install isn't modified, this only reads from it.
 3. Pick something and drag the sliders. Each one shows what the value was before you touched it.
 4. Install. That builds the mod and puts it in its own folder under `Content/Paks`.
@@ -136,9 +136,9 @@ See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build`
 
 [retoc](https://github.com/trumank/retoc) and [repak](https://github.com/trumank/repak) are [trumank's](https://github.com/trumank), and this doesn't work without them.
 
-The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
+[blam-tags](https://github.com/camden-smallwood/blam-tags) by [Camden Smallwood](https://github.com/camden-smallwood). It reads the tag schema instead of making you hunt for offsets, and has definitions for this game. I used it to validate the shield and vitality offsets I couldn't figure out, which is how I worked out why they weren't doing anything.
 
-[blam-tags](https://github.com/camden-smallwood/blam-tags) by [Camden Smallwood](https://github.com/camden-smallwood). I used it to validate the shield and vitality offsets I couldn't figure out, which is how I worked out why they weren't doing anything.
+The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
 
 ## License
 
