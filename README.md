@@ -46,7 +46,7 @@ Linux: `python3 blamforge.py`
 
 A browser tab opens, then...
 
-1. It looks for the game. If it can't find it, paste either the game folder or the `Paks` folder inside it. Steam and Game Pass put them in different places, so either works.
+1. It looks for the game. If it can't find it, paste either the game folder or the `Paks` folder inside it. Steam and Game Pass keep things in different places and name the container differently, and it handles both. The top corner says which one it found.
 2. First time only, it unpacks the game container to get at the tags. A minute or two. It keeps about a dozen files and bins the rest. Your install isn't modified, this only reads from it.
 3. Pick something and drag the sliders. Each one shows what the value was before you touched it.
 4. Install. That builds the mod and puts it in its own folder under `Content/Paks`.
@@ -84,6 +84,12 @@ It will probably take someone smarter than me to figure it out.
 
 You can't change them. Three fields in the tag look like they should do it and none of them work, because the engine rebuilds the damage data when the tag loads. The recharge sliders are fine.
 
+## Damage
+
+Some weapons do less damage the further away you are, so those get two sliders, one for point blank and one for range. The rest do the same damage at any distance and get one.
+
+For scale, the Chief has 70 to lose and 45 of that is body. A magnum round is 23, an assault rifle round is 8.5, a rocket is 240 at the centre.
+
 ## Co-op
 
 Not a stinkin' clue. Nobody has tried any of this in co-op and I don't know whether it's host file driven or not. If you try it, please reach out to me.
@@ -98,13 +104,17 @@ Windows: `python cleanse.py`
 
 Linux: `python3 cleanse.py`
 
-That lists what's there. Add a name to remove one, or `--all` for everything. It only touches folders with that text file in them, so nobody else's mods get caught up in it.
+That lists what's there. Add a name to remove one, or `--all` for everything. It clears the matching saved slider values too. It only touches folders with that text file in them, so nobody else's mods get caught up in it.
 
 Close the game first. Windows won't let you delete files something else has open.
 
 ## Platforms
 
-Written and tested on Linux. It should run anywhere python and retoc do, and it looks in the usual Windows/Linux Steam locations, but I've only ever used it on Linux myself. If something breaks elsewhere, say so.
+Written and tested on Linux. Steam and Game Pass are both handled, and it looks on every drive letter you've got rather than guessing.
+
+Game Pass took a while to get right. It keeps the Paks folder a level deeper than Steam does and calls the container `pakchunk0-WinGDK.utoc` instead of `pakchunk0-Windows.utoc`, so it would find the folder and then not see the game in it. [NagatoZeta](https://next.nexusmods.com/profile/NagatoZeta) worked that out, sent the fix, and confirmed a mod installs and runs on it, none of which I could have done from here.
+
+If something breaks somewhere else, say so.
 
 ## How it works, roughly
 
@@ -139,6 +149,8 @@ See CHANGELOG.md. The version in `registry.json` is Blamforge's own. The `build`
 [blam-tags](https://github.com/camden-smallwood/blam-tags) by [Camden Smallwood](https://github.com/camden-smallwood). It reads the tag schema instead of making you hunt for offsets, and has definitions for this game. I used it to validate the shield and vitality offsets I couldn't figure out, which is how I worked out why they weren't doing anything.
 
 The Chief recharge values were difficult to find, thankfully [Chance_25](https://www.nexusmods.com/profile/Chance255) set them in [Chief Shield and Health Recharge Overhaul](https://www.nexusmods.com/halocampaignevolved/mods/226)
+
+[NagatoZeta](https://next.nexusmods.com/profile/NagatoZeta) for the Game Pass support, and [SkrappyIE](https://next.nexusmods.com/profile/SkrappyIE) and [SebSpy7IISaidWithThe7II](https://next.nexusmods.com/profile/SebSpy7IISaidWithThe7II) for reporting it in the first place.
 
 ## License
 

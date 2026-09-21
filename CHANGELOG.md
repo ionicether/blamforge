@@ -3,6 +3,28 @@
 Versions here are Blamforge's own. The game build these were verified against
 is separate and lives in `registry.json` under `build`.
 
+## 0.7.0
+
+Game Pass works now. It ships the container under a different name,
+`pakchunk0-WinGDK.utoc` instead of `pakchunk0-Windows.utoc`, so 0.6.2 could
+find the folder and still not see the game in it. 
+[NagatoZeta](https://www.nexusmods.com/profile/NagatoZeta) worked that out
+and sent the fix.
+
+The top corner says which edition it found, since there's now something to
+be wrong about.
+
+Damage. Fifteen weapons, from the assault rifle at 8.5 a round up to the
+rocket launcher at 240.
+
+Weapons that fall off with distance get two sliders.
+
+Two new things at the top of the list. Presets shows what you've changed and
+lets you export it to a file, load one back, or reinstall the lot. Cleanse
+pulls every mod out and forgets your settings, so it really is back to
+nothing. Export first if you want it back. `cleanse.py` does the same from a terminal, and
+clears the matching saved values as well.
+
 ## 0.6.2
 
 Game Pass copies weren't being found. The Xbox app puts another Content

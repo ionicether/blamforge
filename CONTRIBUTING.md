@@ -2,68 +2,112 @@
 
 Offsets. That's what's useful here.
 
-17 targets so far. The energy sword is in the game and not in here, but it has no magazine and no battery so there might be nothing to change. Vehicles and grenades haven't been touched at all.
+18 targets so far. The energy sword isn't in here, grenades only have a carry count, and vehicles haven't been touched at all.
 
-## How the offsets get found
+## Start with the manifest
 
-The values live in Blam tags, which sit inside Unreal IoStore containers. Get a tag out and the numbers are just ints and floats at fixed spots. Changing them is easy. Finding them is the whole job.
+When retoc unpacks a container it writes a `manifest.json` next to the chunks. Open it.
 
-Blam tags carry their own field names as text, which helps:
-
-```
-strings -a -t d <chunk> | grep -iE 'magazine|rounds|recharge|vitality'
-```
-
-That tells you the tag has a field called "rounds loaded maximum". It does not tell you where the number is. Names are in one block, values are somewhere else entirely.
-
-Diffing is how you bridge it. Two versions of the same tag, stock and modded, or a Grunt and an Elite. Bytes that differ are the values:
+It maps every chunk id to a path. 114,281 entries, 24,000 of them blam tags:
 
 ```
-cmp -l stock.tag modded.tag | head -40
+6d78b216566666fe00000002 -> .../Tags/objects/weapons/Pistol/magnum/projectiles/magnum_bullet-damage_effect.ubulk
 ```
 
-Read four bytes at each spot as a float and see if the number means anything. 60 next to 600 is a magazine and its reserve. Two floats that come out to exactly 3.50 and 5.00 degrees once converted from radians are a spread.
+So "which chunk is the magnum's damage" is a dictionary lookup, not a search:
 
-Best trick - if someone already made a mod that does what you want, diff theirs. The Chief recharge offsets took ten minutes that way. I'd spent hours on the same problem before that and got nowhere.
+```python
+import json
+cp = json.load(open('manifest.json'))['chunk_paths']
+for cid, p in cp.items():
+    if '/Tags/' in p and 'magnum' in p:
+        print(cid, p.split('/Tags/')[1])
+```
+
+## Then blam-tags
+
+[blam-tags](https://github.com/camden-smallwood/blam-tags) reads the tag schema and prints fields by name, and it has definitions for this game specifically.
+
+```
+blam-tag-shell --game haloce_evolved inspect --full <chunk> --filter damage
+```
+
+Between those two you can get from "I want to change weapon damage" to a named field without guessing once. It's how I found out the health fields I'd been shipping were in a block the game ignores.
+
+## Finding where the value actually sits
+
+Here's the annoying part. blam-tags tells you the field exists and what it reads. It won't tell you the byte offset, and Blamforge needs the offset.
+
+Two ways. Set the field with blam-tags and diff:
+
+```
+cp chunk /tmp/x
+blam-tag-shell --game haloce_evolved set /tmp/x 'damage lower bound' 400
+cmp -l chunk /tmp/x
+```
+
+`cmp -l` prints in octal, which caught me out. Byte positions are 1-indexed too.
+
+Or scan for the value you already know:
+
+```python
+import struct
+b = open(chunk,'rb').read()
+for off in range(len(b)-4):
+    if abs(struct.unpack_from('<f', b, off)[0] - 8.5) < 1e-4:
+        print(hex(off))
+```
+
+The second is better when several fields share a value, because you see all the candidates at once instead of one.
+
+Some fields are the same offset in every tag of a kind. Weapon damage is at 0x1121 in every damage effect tag in the game. Worth checking before you go hunting per weapon.
 
 ## Adding a target
 
-**Find the chunk.** `retoc unpack-raw` a container, then grep the output for something identifying. Weapon tags usually name their own animation graph, so `grep -l plasma_rifle *` gets close.
+**Make sure the thing is in the game.** This game is Reach underneath, so the whole Reach sandbox is sitting in the files whether the campaign uses it or not. I had a DMR and a spartan laser in here for a while, data looked perfect. Halo Studios publish the weapon list. Check against it.
 
-**Find the fields.** `strings -a -t d <chunk>` gives you the schema. Diffing two variants of the same tag type gives you where the values sit.
+**Sanity check the value.** A magazine reads 60, not 1536. A delay reads 6.0, not 6e-38. A float that converts to a round number of degrees is probably a spread.
 
-**Make sure the weapon is in the game.** There are tags for weapons that aren't in the campaign. I had a DMR and a spartan laser in here for a while. The data is right there and looks fine. Halo Studios publish the weapon list, check against that.
+Read the byte.
 
-**Sanity check the value.** A magazine reads 60, not 1536. A delay reads 6.0, not 6e-38. If you convert a float and get a round number of degrees, that's probably a spread.
+**Add it as `"status": "derived"`.**
 
-Read the byte. Don't work it out from the byte next to it. I did that once and shipped an offset that made the whole tag fail verification.
+**Then go play it.** Install, load a level, check the thing changed. If it did, flip to `"confirmed"` and say so in the PR.
 
-**Add it to `registry.json`** as `"status": "derived"`.
-
-**Then go play it.** Install it, load a level, check the thing changed. If it did, flip it to `"confirmed"` and say so in the PR.
-
-Don't mark something confirmed you haven't played. That flag is the only way anyone knows whether an entry has ever been off the page.
+Don't mark something confirmed you haven't played. That flag is the only thing telling anyone whether an entry has ever been off the page, and it's worth nothing the moment someone guesses.
 
 ## Field notes
 
-`derived` fields aren't editable, they're worked out from other fields. Ammo blocks have a reserve count that has to be ceiling minus magazine or the game desyncs.
+`derived` fields aren't editable, they're worked out from other ones. Ammo blocks have a reserve count that has to be ceiling minus magazine or the game desyncs.
 
-`locked` fields aren't editable because changing them might break something. No idea what the shotgun does if it reloads more than one shell at a time. Even if it worked, it kinda breaks immersion.
+`locked` is for fields where changing it might break something. Shotgun reloads one shell at a time and I don't know what happens if it doesn't.
 
-`warn_over` turns the row red past a set number. `warn_above` turns it red past another field's value. Neither stops you, they just say why it's a bad idea. AR and BR use `warn_over` at 99 because the counter on the gun is two digits and 123 rounds shows as 23.
+`warn_over` turns the row red past a set number, `warn_above` past another field's value. Neither stops you. AR and BR use `warn_over` at 99 because the counter on the gun is two digits, so 123 rounds shows as 23.
 
-`mirror` writes the same value to a second offset. Some fields are stored twice and the game wants them matching.
+`mirror` writes the same value to a second offset. Bounds pairs mostly.
 
-The schema name is a hint, not a description. "Total initial" turned out to be how much ammo a weapon comes with when it's set dressing, not what you start a level with.
+`chunk` on a field points it at a different tag. Damage needs this, since it isn't stored in the weapon's own file.
 
-Same goes for units. The AR's rate of fire reads 12, the devs say the intended rate is 10 rounds a second, and those don't line up. Higher is faster, I checked by setting it to 1 and watching it crawl. What the number actually measures, no idea. Write down what you tested and leave the rest.
+The schema name is a hint, not a description. "Total initial" is how much ammo a weapon comes with when it's set dressing, not what you start a level with. Took someone noticing the needler behaved differently from the AR to work that out.
 
-Keep slider ranges around 10x stock. Every magazine slider used to have the same range, which put the sniper rifle (4 rounds) on a track running to 600. Every useful value was in the first half centimetre.
+Units too. The AR's rate of fire reads 12 and the devs say the intended rate is 10 rounds a second. Higher is faster (set it to 1, watched it crawl). What the number measures, no idea. Write down what you tested and leave the rest alone.
+
+Slider ranges around 10x stock. They all used to share one range, which put the sniper rifle (4 rounds) on a track running to 600. Every useful value was in the first half centimetre.
 
 ## Don't commit game files
 
-No chunks, no containers, no `.tag` files. `.gitignore` catches the obvious ones but look at your diff before pushing. Offsets are fine to ship. Bungie's data is not.
+No chunks, no containers, no `.tag` files. `.gitignore` catches the obvious ones but look at your diff before you push. Offsets are fine to ship. Bungie's data is not.
+
+## Submitting
+
+Fork it and open a pull request.
+
+Commit messages use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+Python goes through `ruff check` and `ruff format`, config's in `ruff.toml`. HTML and JSON through [Prettier](https://prettier.io) on defaults. There are a few `# noqa: BLE001` on blind excepts that are deliberate, they stop a failed install taking the server down with it.
+
+There's no test suite yet, so the bar is: it runs, ruff passes, and if you added an offset you've played it in game and marked it confirmed.
 
 ## Something broken?
 
-Tell me the game build, which target, and what the verification error said. Blamforge names the field that disagreed and shows both values, so pasting that is usually enough.
+Game build, which target, and what the verification error said. Blamforge names the field that disagreed and shows both values, so pasting that is usually enough.
