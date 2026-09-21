@@ -6,4 +6,7 @@
 *.pak
 blamforge-*/
 
+settings.json
+
 __pycache__/
+.ruff_cache/

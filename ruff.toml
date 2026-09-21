@@ -1,0 +1,12 @@
+# Keeps the editor and anyone running ruff by hand looking at the same rules.
+line-length = 88
+
+[lint]
+select = ["E", "F", "I", "UP", "SIM", "BLE", "PL", "FURB", "RUF", "EXE", "B", "C4"]
+ignore = [
+    "PLR0911",  # a few returns in a request handler is fine
+    "PLR0912",
+    "PLR0915",
+    "PLR2004",  # offsets and sizes are magic numbers by nature
+    "E501",     # long lines are usually a url or a message
+]
