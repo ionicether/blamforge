@@ -12,29 +12,46 @@ its own .cache, and touches nothing else.
 Python 3.8+, and retoc needs to be on PATH: github.com/trumank/retoc
 """
 
+import contextlib
 import http.server
 import json
 import os
-import re
-import urllib.request
-import zipfile
-import tarfile
 import platform
+import re
 import shutil
 import socket
 import socketserver
 import struct
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import time
 import urllib.parse
+import urllib.request
 import webbrowser
+import zipfile
 
 APP = "blamforge"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def need_retoc():
+    """retoc's path, or a readable complaint.
+
+    Everything checks for retoc at startup, but it could go missing between
+    then and here, and subprocess raises something unhelpful when handed a
+    None.
+    """
+    p = retoc_path()
+    if not p:
+        raise RuntimeError(
+            "Can't find retoc any more. It was there when Blamforge started, "
+            "so it's been moved or deleted since."
+        )
+    return p
 
 
 def retoc_path():
@@ -54,17 +71,22 @@ def retoc_path():
 
 
 CACHE = os.path.join(HERE, ".cache")
-CONTAINER = "pakchunk0-Windows.utoc"
+# Steam and the Xbox app ship the same container under different names, so
+# finding the game means checking for both. Thanks to NagatoZeta for working
+# this out, the Game Pass one had me stuck.
+CONTAINERS = (
+    ("pakchunk0-Windows.utoc", "Steam"),
+    ("pakchunk0-WinGDK.utoc", "Game Pass"),
+)
 
 # Pinned rather than "latest" so the download can't quietly become something
 # else. Bump it when there's a reason to.
 RETOC_VERSION = "v0.1.5"
-RETOC_BASE = ("https://github.com/trumank/retoc/releases/download/"
-              + RETOC_VERSION + "/")
+RETOC_BASE = "https://github.com/trumank/retoc/releases/download/" + RETOC_VERSION + "/"
 RETOC_ASSETS = {
-    ("Linux", "x86_64"):   "retoc_cli-x86_64-unknown-linux-gnu.tar.xz",
-    ("Linux", "aarch64"):  "retoc_cli-aarch64-unknown-linux-gnu.tar.xz",
-    ("Windows", "AMD64"):  "retoc_cli-x86_64-pc-windows-msvc.zip",
+    ("Linux", "x86_64"): "retoc_cli-x86_64-unknown-linux-gnu.tar.xz",
+    ("Linux", "aarch64"): "retoc_cli-aarch64-unknown-linux-gnu.tar.xz",
+    ("Windows", "AMD64"): "retoc_cli-x86_64-pc-windows-msvc.zip",
     ("Windows", "x86_64"): "retoc_cli-x86_64-pc-windows-msvc.zip",
 }
 
@@ -84,9 +106,9 @@ def fetch_retoc(progress):
     asset = retoc_asset()
     if not asset:
         raise RuntimeError(
-            "No prebuilt retoc for %s %s that I know of. Grab one from %s "
+            f"No prebuilt retoc for {platform.system()} {platform.machine()} that I know of. Grab one from {RETOC_BASE} "
             "and put it next to blamforge.py."
-            % (platform.system(), platform.machine(), RETOC_BASE))
+        )
 
     url = RETOC_BASE + asset
     progress("Downloading " + asset)
@@ -95,11 +117,10 @@ def fetch_retoc(progress):
     try:
         archive = os.path.join(scratch, asset)
         try:
-            with urllib.request.urlopen(url, timeout=60) as r, \
-                    open(archive, "wb") as f:
+            with urllib.request.urlopen(url, timeout=60) as r, open(archive, "wb") as f:
                 shutil.copyfileobj(r, f)
         except Exception as e:
-            raise RuntimeError("Couldn't download it: %s" % e)
+            raise RuntimeError(f"Couldn't download it: {e}") from e
 
         progress("Unpacking")
         if asset.endswith(".zip"):
@@ -132,24 +153,33 @@ def fetch_retoc(progress):
         # through extracting the game. Better to find out now.
         progress("Checking it runs")
         try:
-            r = subprocess.run([dest, "--version"], capture_output=True,
-                               text=True, timeout=30)
+            r = subprocess.run(
+                [dest, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
         except OSError as e:
             os.remove(dest)
             raise RuntimeError(
-                "Downloaded it but it won't run on this system: %s. Try a "
-                "different build from %s, or build it yourself." % (e, RETOC_BASE))
+                f"Downloaded it but it won't run on this system: {e}. Try a "
+                f"different build from {RETOC_BASE}, or build it yourself."
+            ) from e
         if r.returncode != 0:
             err = (r.stderr or r.stdout or "").strip().splitlines()
             os.remove(dest)
             raise RuntimeError(
-                "Downloaded it but it won't run: %s. Try a different build "
-                "from %s, or build it yourself."
-                % (err[0] if err else "no output", RETOC_BASE))
+                "Downloaded it but it won't run: {}. Try a different build "
+                "from {}, or build it yourself.".format(
+                    err[0] if err else "no output", RETOC_BASE
+                )
+            )
 
         return dest
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
+
 
 # The .pak that has to sit next to a .utoc/.ucas or the engine won't mount the
 # container. retoc doesn't produce one, so we copy an existing one.
@@ -209,6 +239,7 @@ def game_hints():
 
 # ----------------------------------------------------------------- registry
 
+
 def load_registry():
     path = os.path.join(HERE, "registry.json")
     if os.path.exists(path):
@@ -218,13 +249,14 @@ def load_registry():
     js = os.path.join(HERE, "registry.js")
     if not os.path.exists(js):
         sys.exit("registry.json not found next to blamforge.py")
-    src = open(js, encoding="utf-8").read()
-    src = src[src.index("{"):src.rindex("}") + 1]
-    src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
+    with open(js, encoding="utf-8") as f:
+        src = f.read()
+    src = src[src.index("{") : src.rindex("}") + 1]
+    src = re.sub(r"/\*.*?\*/", "", src, flags=re.DOTALL)
     src = re.sub(r"//.*", "", src)
-    src = re.sub(r"(\w+):", r'"\1":', src)          # bare keys need quoting
+    src = re.sub(r"(\w+):", r'"\1":', src)  # bare keys need quoting
     src = re.sub(r"0x([0-9a-fA-F]+)", lambda m: str(int(m.group(1), 16)), src)
-    src = re.sub(r",(\s*[}\]])", r"\1", src)        # JSON hates trailing commas
+    src = re.sub(r",(\s*[}\]])", r"\1", src)  # JSON hates trailing commas
     return json.loads(src)
 
 
@@ -234,22 +266,27 @@ TARGETS = {t["id"]: t for t in REG["targets"]}
 
 # --------------------------------------------------------------- game files
 
+
 def find_game(given=None):
-    """Work out where the game is.
+    """Work out where the game is and which edition it is.
 
     Takes either the game folder or the Paks folder itself, and copes with
-    both the Steam and Xbox app layouts.
+    both the Steam and Xbox app layouts, which differ in where the Paks
+    folder sits and in what the container is called.
+
+    Returns (game folder, paks folder, container name, edition).
     """
     roots = [given] if given else game_hints()
-    for r in roots:
-        if not r:
+    for raw in roots:
+        if not raw:
             continue
-        r = os.path.expanduser(r)
+        r = os.path.expanduser(raw)
         for shape in PAKS_SHAPES:
             cand = os.path.join(r, *shape) if shape else r
-            if os.path.exists(os.path.join(cand, CONTAINER)):
-                return r, cand
-    return None, None
+            for container, edition in CONTAINERS:
+                if os.path.exists(os.path.join(cand, container)):
+                    return r, cand, container, edition
+    return None, None, None, None
 
 
 def find_stub(paks):
@@ -273,9 +310,52 @@ def read_field(b, f):
 def write_field(b, f, v):
     for off in [f["off"]] + ([f["mirror"]] if f.get("mirror") else []):
         if f["type"] == "u16":
-            struct.pack_into("<H", b, off, int(round(v)))
+            struct.pack_into("<H", b, off, round(v))
         else:
             struct.pack_into("<f", b, off, float(v))
+
+
+def field_chunk(t, f):
+    """Which chunk a field lives in.
+
+    Most fields are in the target's own tag. Weapon damage isn't: it sits in
+    a separate damage effect tag, three hops from the weapon, so those fields
+    carry their own chunk id.
+    """
+    return f.get("chunk") or t["chunk"]
+
+
+def load_chunks(t):
+    """Every chunk this target touches, keyed by id."""
+    out = {}
+    for cid in {field_chunk(t, f) for f in t["fields"]}:
+        p = os.path.join(CACHE, cid)
+        if not os.path.exists(p):
+            raise RuntimeError(
+                f"tag {cid} isn't in the cache, try re-reading the game files"
+            )
+        with open(p, "rb") as f:
+            out[cid] = bytearray(f.read())
+    return out
+
+
+def verify_all(bufs, t):
+    """Same as verify, but across every chunk the target uses."""
+    bad = []
+    for f in t["fields"]:
+        b = bufs[field_chunk(t, f)]
+        if f["off"] + 4 > len(b):
+            bad.append((f["key"], None, f["stock"]))
+            continue
+        got = read_field(b, f)
+        ok = (
+            got == f["stock"]
+            if f["type"] == "u16"
+            else abs(got - f["stock"]) <= max(1e-6, abs(f["stock"]) * 1e-4)
+        )
+        if not ok:
+            bad.append((f["key"], got, f["stock"]))
+    return bad
 
 
 def verify(b, t):
@@ -292,8 +372,11 @@ def verify(b, t):
             bad.append((f["key"], None, f["stock"]))
             continue
         got = read_field(b, f)
-        ok = (got == f["stock"] if f["type"] == "u16"
-              else abs(got - f["stock"]) <= max(1e-6, abs(f["stock"]) * 1e-4))
+        ok = (
+            got == f["stock"]
+            if f["type"] == "u16"
+            else abs(got - f["stock"]) <= max(1e-6, abs(f["stock"]) * 1e-4)
+        )
         if not ok:
             bad.append((f["key"], got, f["stock"]))
     return bad
@@ -301,7 +384,14 @@ def verify(b, t):
 
 # ------------------------------------------------------------------ actions
 
-STATE = {"game": None, "paks": None, "status": "", "busy": False}
+STATE = {
+    "game": None,
+    "paks": None,
+    "container": None,
+    "edition": None,
+    "status": "",
+    "busy": False,
+}
 
 
 STAMP = "extracted.txt"
@@ -323,12 +413,15 @@ def cache_state():
     if not os.path.isdir(CACHE):
         return False, "nothing extracted yet"
 
-    missing = [t["name"] for t in REG["targets"]
-               if t.get("chunk")
-               and not os.path.exists(os.path.join(CACHE, t["chunk"]))]
+    missing = []
+    for t in REG["targets"]:
+        for cid in {f.get("chunk") or t.get("chunk") for f in t["fields"]}:
+            if cid and not os.path.exists(os.path.join(CACHE, cid)):
+                missing.append(t["name"])
+                break
     if missing:
         if len(missing) > 3:
-            what = "%s and %d others" % (missing[0], len(missing) - 1)
+            what = f"{missing[0]} and {len(missing) - 1} others"
         else:
             what = ", ".join(missing)
         return False, "no tag cached for " + what
@@ -344,7 +437,7 @@ def cache_ok():
     return cache_state()[0]
 
 
-def extract(paks, progress):
+def extract(paks, container, progress):
     """Unpack the container and keep the dozen chunks we can edit.
 
     retoc has no way to pull a single chunk, so this extracts all ~106,000
@@ -355,20 +448,28 @@ def extract(paks, progress):
     scratch = tempfile.mkdtemp(prefix="blamforge-", dir=HERE)
     out = os.path.join(scratch, "all")
     try:
-        progress("Unpacking the game container. This takes a minute or two "
-                 "and only happens once.")
-        r = subprocess.run([retoc_path(), "unpack-raw",
-                            os.path.join(paks, CONTAINER), out],
-                           capture_output=True, text=True)
+        progress(
+            "Unpacking the game container. This takes a minute or two "
+            "and only happens once."
+        )
+        r = subprocess.run(
+            [need_retoc(), "unpack-raw", os.path.join(paks, container), out],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         if r.returncode != 0:
             raise RuntimeError((r.stderr or "retoc failed").strip())
 
         chunks = os.path.join(out, "chunks")
         progress("Keeping the tags, discarding the rest.")
+        wanted = set()
         for t in REG["targets"]:
-            cid = t.get("chunk")
-            if not cid:
-                continue
+            for f in t["fields"]:
+                cid = f.get("chunk") or t.get("chunk")
+                if cid:
+                    wanted.add(cid)
+        for cid in wanted:
             src = os.path.join(chunks, cid)
             if os.path.exists(src):
                 shutil.copy2(src, os.path.join(CACHE, cid))
@@ -382,9 +483,9 @@ def extract(paks, progress):
             shutil.copy2(stub, os.path.join(CACHE, "stub.pak"))
 
         with open(os.path.join(CACHE, STAMP), "w", encoding="utf-8") as fh:
-            fh.write("extracted %s\n" % time.strftime("%Y-%m-%d %H:%M"))
-            fh.write("registry %s\n" % REG.get("version", "?"))
-            fh.write("build %s\n" % REG.get("build", "?"))
+            fh.write("extracted {}\n".format(time.strftime("%Y-%m-%d %H:%M")))
+            fh.write("registry {}\n".format(REG.get("version", "?")))
+            fh.write("build {}\n".format(REG.get("build", "?")))
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
 
@@ -409,20 +510,24 @@ def load_settings():
 
 def save_settings(target_id, values):
     d = load_settings()
-    d[target_id] = {k: v for k, v in values.items()}
+    d[target_id] = dict(values)
     try:
         with open(SETTINGS, "w", encoding="utf-8") as f:
             json.dump(d, f, indent=2)
     except OSError:
-        pass          # not worth failing an install over
+        pass  # not worth failing an install over
+
+
 PREFIX = "bf_"
 
 
 def mod_dirs(target_id):
     """Where this mod could be. New installs use the prefix; older ones
     didn't, and there's no reason to strand them."""
-    return [os.path.join(STATE["paks"], PREFIX + target_id),
-            os.path.join(STATE["paks"], target_id)]
+    return [
+        os.path.join(STATE["paks"], PREFIX + target_id),
+        os.path.join(STATE["paks"], target_id),
+    ]
 
 
 def mod_dir(target_id):
@@ -433,7 +538,7 @@ def mod_dir(target_id):
     return None
 
 
-def write_note(dest, t, values, patched):
+def write_note(dest, t, values, bufs):
     """Leave a plain text record in the mod folder.
 
     Mostly so that in six months you can look at a folder and know what's in
@@ -441,16 +546,16 @@ def write_note(dest, t, values, patched):
     there's nothing here that has to parse.
     """
     lines = [
-        "%s %s" % (APP, REG.get("version", "?")),
+        "{} {}".format(APP, REG.get("version", "?")),
         t["name"],
-        "installed %s" % time.strftime("%Y-%m-%d %H:%M"),
-        "game build %s" % REG.get("build", "unknown"),
-        "chunk %s" % t["chunk"],
+        "installed {}".format(time.strftime("%Y-%m-%d %H:%M")),
+        "game build {}".format(REG.get("build", "unknown")),
+        "chunk {}".format(", ".join(sorted({field_chunk(t, f) for f in t["fields"]}))),
         "",
     ]
     rows = []
     for f in t["fields"]:
-        now = read_field(patched, f)
+        now = read_field(bufs[field_chunk(t, f)], f)
         if f["type"] == "u16":
             now, was = int(now), int(f["stock"])
             same = now == was
@@ -467,7 +572,7 @@ def write_note(dest, t, values, patched):
     if rows:
         width = max(len(r[0]) for r in rows)
         for label, was, now in rows:
-            lines.append("%-*s  %s -> %s" % (width, label, was, now))
+            lines.append(f"{label:<{width}}  {was} -> {now}")
     else:
         lines.append("nothing changed from stock")
 
@@ -483,41 +588,44 @@ def write_note(dest, t, values, patched):
 
 def install(target_id, values, progress):
     t = TARGETS[target_id]
-    cid = t["chunk"]
-    src = os.path.join(CACHE, cid)
-    if not os.path.exists(src):
-        raise RuntimeError("that tag isn't in the cache; try Refresh")
+    bufs = load_chunks(t)
 
-    b = bytearray(open(src, "rb").read())
-
-    bad = verify(b, t)
+    bad = verify_all(bufs, t)
     if bad:
         raise RuntimeError(
-            "The cached tag isn't stock: " +
-            ", ".join("%s reads %s, expected %s" % x for x in bad) +
-            ". A mod may already be installed, or the game has updated.")
+            "The cached tag isn't stock: "
+            + ", ".join("{} reads {}, expected {}".format(*x) for x in bad)
+            + ". A mod may already be installed, or the game has updated."
+        )
 
     for f in t["fields"]:
         if f["key"] in values:
-            write_field(b, f, values[f["key"]])
+            write_field(bufs[field_chunk(t, f)], f, values[f["key"]])
 
     name = t["id"]
-    stem = "zzz_%s_P" % name
+    stem = f"zzz_{name}_P"
     scratch = tempfile.mkdtemp(prefix="blamforge-build-", dir=HERE)
     try:
         srcdir = os.path.join(scratch, "src")
         os.makedirs(os.path.join(srcdir, "chunks"))
-        open(os.path.join(srcdir, "chunks", cid), "wb").write(bytes(b))
-        shutil.copy2(os.path.join(CACHE, "manifest.json"),
-                     os.path.join(srcdir, "manifest.json"))
+        for cid, buf in bufs.items():
+            with open(os.path.join(srcdir, "chunks", cid), "wb") as f:
+                f.write(bytes(buf))
+        shutil.copy2(
+            os.path.join(CACHE, "manifest.json"), os.path.join(srcdir, "manifest.json")
+        )
 
         dist = os.path.join(scratch, "dist")
         os.makedirs(dist)
         utoc = os.path.join(dist, stem + ".utoc")
 
         progress("Packing the mod.")
-        r = subprocess.run([retoc_path(), "pack-raw", srcdir, utoc],
-                           capture_output=True, text=True)
+        r = subprocess.run(
+            [need_retoc(), "pack-raw", srcdir, utoc],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         if r.returncode != 0:
             raise RuntimeError((r.stderr or "retoc pack-raw failed").strip())
         if not os.path.exists(utoc) or os.path.getsize(utoc) == 0:
@@ -538,13 +646,32 @@ def install(target_id, values, progress):
         dest = os.path.join(STATE["paks"], PREFIX + name)
         os.makedirs(dest, exist_ok=True)
         for ext in (".utoc", ".ucas", ".pak"):
-            shutil.copy2(os.path.join(dist, stem + ext),
-                         os.path.join(dest, stem + ext))
-        write_note(dest, t, values, b)
+            shutil.copy2(os.path.join(dist, stem + ext), os.path.join(dest, stem + ext))
+        write_note(dest, t, values, bufs)
         save_settings(target_id, values)
         return dest
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
+
+
+def cleanse():
+    """Take every Blamforge mod back out and forget the settings.
+
+    Only folders with our own note file in them, so anyone else's mods are
+    left where they are. cleanse.py is the standalone version and only
+    removes the folders; this one is a full reset.
+    """
+    removed = []
+    for t in REG["targets"]:
+        d = mod_dir(t["id"])
+        if d:
+            shutil.rmtree(d, ignore_errors=True)
+            removed.append(t["name"])
+    # clears the saved values too, so this really is back to nothing. Export
+    # a preset first if you want your setup back afterwards.
+    with contextlib.suppress(OSError):
+        os.remove(SETTINGS)
+    return removed
 
 
 def uninstall(target_id):
@@ -574,12 +701,13 @@ def installed_ids():
 
 # ------------------------------------------------------------------- server
 
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=HERE, **kw)
 
-    def log_message(self, *a):
-        pass
+    def log_message(self, format, *args):
+        pass  # the terminal is for our own output, not a request log
 
     def _json(self, obj, code=200):
         body = json.dumps(obj).encode()
@@ -594,36 +722,75 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         if u.path == "/api/state":
             ok, why = cache_state()
-            return self._json({
-                "registry": REG,
-                "game": STATE["game"],
-                "ready": ok,
-                "stale": why,
-                "status": STATE["status"],
-                "busy": STATE["busy"],
-                "installed": installed_ids(),
-                "retoc": retoc_path() is not None,
-                "retoc_asset": retoc_asset(),
-                "retoc_url": RETOC_BASE,
-            })
+            return self._json(
+                {
+                    "registry": REG,
+                    "game": STATE["game"],
+                    "edition": STATE["edition"],
+                    "ready": ok,
+                    "stale": why,
+                    "status": STATE["status"],
+                    "busy": STATE["busy"],
+                    "installed": installed_ids(),
+                    "retoc": retoc_path() is not None,
+                    "retoc_asset": retoc_asset(),
+                    "retoc_url": RETOC_BASE,
+                }
+            )
+
+        if u.path == "/api/saved":
+            saved = load_settings()
+            out = []
+            for tid, vals in saved.items():
+                t = TARGETS.get(tid)
+                if not t:
+                    continue
+                changed = []
+                for f in t["fields"]:
+                    if f["key"] not in vals or f.get("derived"):
+                        continue
+                    v = vals[f["key"]]
+                    same = (
+                        v == f["stock"]
+                        if f["type"] == "u16"
+                        else abs(v - f["stock"]) <= max(1e-6, abs(f["stock"]) * 1e-4)
+                    )
+                    if not same:
+                        changed.append(
+                            {
+                                "label": f.get("label", f["key"]),
+                                "was": f["stock"],
+                                "now": v,
+                            }
+                        )
+                out.append({"id": tid, "name": t["name"], "changed": changed})
+            return self._json({"saved": out, "raw": saved})
 
         if u.path == "/api/values":
             tid = urllib.parse.parse_qs(u.query).get("target", [""])[0]
             t = TARGETS.get(tid)
             if not t:
                 return self._json({"error": "unknown target"}, 404)
-            p = os.path.join(CACHE, t.get("chunk") or "")
-            if not os.path.exists(p):
-                return self._json({"error": "not extracted"}, 404)
-            b = open(p, "rb").read()
-            bad = verify(b, t)
+            try:
+                bufs = load_chunks(t)
+            except RuntimeError as e:
+                return self._json({"error": str(e)}, 404)
+            bad = verify_all(bufs, t)
             saved = load_settings().get(tid, {})
-            return self._json({
-                "values": {f["key"]: read_field(b, f) for f in t["fields"]},
-                "saved": {k: v for k, v in saved.items()
-                          if any(f["key"] == k for f in t["fields"])},
-                "mismatch": [{"key": k, "got": g, "want": w} for k, g, w in bad],
-            })
+            return self._json(
+                {
+                    "values": {
+                        f["key"]: read_field(bufs[field_chunk(t, f)], f)
+                        for f in t["fields"]
+                    },
+                    "saved": {
+                        k: v
+                        for k, v in saved.items()
+                        if any(f["key"] == k for f in t["fields"])
+                    },
+                    "mismatch": [{"key": k, "got": g, "want": w} for k, g, w in bad],
+                }
+            )
 
         return super().do_GET()
 
@@ -633,13 +800,69 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         body = json.loads(self.rfile.read(n) or "{}")
 
         if u.path == "/api/game":
-            game, paks = find_game(body.get("path"))
+            game, paks, container, edition = find_game(body.get("path"))
             if not game:
-                return self._json({"error":
-                    "No Halo: Campaign Evolved there. Look for the folder "
-                    "containing Meteorite/Content/Paks."}, 400)
+                return self._json(
+                    {
+                        "error": "No Halo: Campaign Evolved there. Look for the folder "
+                        "containing Meteorite/Content/Paks."
+                    },
+                    400,
+                )
             STATE["game"], STATE["paks"] = game, paks
-            return self._json({"game": game, "ready": cache_ok()})
+            STATE["container"], STATE["edition"] = container, edition
+            return self._json({"game": game, "edition": edition, "ready": cache_ok()})
+
+        if u.path == "/api/cleanse":
+            if not STATE["paks"]:
+                return self._json({"error": "no game folder set"}, 400)
+            return self._json({"removed": cleanse()})
+
+        if u.path == "/api/settings":
+            d = body.get("settings")
+            if not isinstance(d, dict):
+                return self._json({"error": "that file isn't a settings file"}, 400)
+            known = {t["id"] for t in REG["targets"]}
+            kept = {k: v for k, v in d.items() if k in known}
+            try:
+                with open(SETTINGS, "w", encoding="utf-8") as f:
+                    json.dump(kept, f, indent=2)
+            except OSError as e:
+                return self._json({"error": str(e)}, 500)
+            return self._json(
+                {"loaded": sorted(kept), "skipped": sorted(set(d) - set(kept))}
+            )
+
+        if u.path == "/api/install_saved":
+            if not STATE["paks"]:
+                return self._json({"error": "no game folder set"}, 400)
+            if STATE["busy"]:
+                return self._json({"error": "already working"}, 409)
+
+            saved = load_settings()
+
+            def run():
+                STATE["busy"] = True
+                done, failed = [], []
+                try:
+                    for tid, vals in saved.items():
+                        if tid not in TARGETS:
+                            continue
+                        STATE["status"] = "Installing " + TARGETS[tid]["name"]
+                        try:
+                            install(tid, vals, lambda s: None)
+                            done.append(TARGETS[tid]["name"])
+                        except Exception as e:  # noqa: BLE001 - one bad
+                            # target shouldn't stop the rest installing
+                            failed.append(f"{TARGETS[tid]['name']} ({e})")
+                    STATE["status"] = f"Installed {len(done)}."
+                    if failed:
+                        STATE["status"] += " Didn't manage " + ", ".join(failed)
+                finally:
+                    STATE["busy"] = False
+
+            threading.Thread(target=run, daemon=True).start()
+            return self._json({"started": True})
 
         if u.path == "/api/get_retoc":
             if retoc_path():
@@ -652,8 +875,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 try:
                     p = fetch_retoc(lambda s: STATE.update(status=s))
                     STATE["status"] = "Got it: " + os.path.basename(p)
-                except Exception as e:
-                    STATE["status"] = "Failed: %s" % e
+                except Exception as e:  # noqa: BLE001 - a thread that dies
+                    # silently leaves the page waiting forever
+                    STATE["status"] = f"Failed: {e}"
                 finally:
                     STATE["busy"] = False
 
@@ -669,10 +893,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             def run():
                 STATE["busy"] = True
                 try:
-                    extract(STATE["paks"], lambda s: STATE.update(status=s))
+                    extract(
+                        STATE["paks"],
+                        STATE["container"],
+                        lambda s: STATE.update(status=s),
+                    )
                     STATE["status"] = "Ready."
-                except Exception as e:
-                    STATE["status"] = "Failed: %s" % e
+                except Exception as e:  # noqa: BLE001 - same, this runs in a
+                    # thread and the only way to report is the status line
+                    STATE["status"] = f"Failed: {e}"
                 finally:
                     STATE["busy"] = False
 
@@ -683,18 +912,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if not STATE["paks"]:
                 return self._json({"error": "no game folder set"}, 400)
             try:
-                dest = install(body["target"], body.get("values", {}),
-                               lambda s: STATE.update(status=s))
+                dest = install(
+                    body["target"],
+                    body.get("values", {}),
+                    lambda s: STATE.update(status=s),
+                )
                 STATE["status"] = "Installed."
                 return self._json({"installed": dest})
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - turn any failure into
+                # something the page can show rather than a dead request
                 STATE["status"] = ""
                 return self._json({"error": str(e)}, 400)
 
         if u.path == "/api/uninstall":
             try:
                 return self._json({"removed": uninstall(body["target"])})
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - same
                 return self._json({"error": str(e)}, 400)
 
         return self._json({"error": "unknown endpoint"}, 404)
@@ -718,16 +951,20 @@ def main():
         print("Get it from https://github.com/trumank/retoc. Blamforge needs")
         print("it to read and write the game's containers.\n")
 
-    game, paks = find_game(sys.argv[1] if len(sys.argv) > 1 else None)
+    game, paks, container, edition = find_game(
+        sys.argv[1] if len(sys.argv) > 1 else None
+    )
     if game:
         STATE["game"], STATE["paks"] = game, paks
-        print("game:", game)
+        STATE["container"], STATE["edition"] = container, edition
+        print("game:", game, f"({edition})")
     else:
-        print("Couldn't find the game automatically; you can point at it in "
-              "the browser.")
+        print(
+            "Couldn't find the game automatically; you can point at it in the browser."
+        )
 
     port = free_port()
-    url = "http://127.0.0.1:%d/app.html" % port
+    url = f"http://127.0.0.1:{port}/app.html"
     print("Blamforge running at", url)
     print("Close this window when you're done.\n")
 

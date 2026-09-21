@@ -1,5 +1,5 @@
 {
-  "version": "0.6.1",
+  "version": "0.7.0",
   "build": "2026.08.11.1121610",
   "targets": [
     {
@@ -60,7 +60,7 @@
           "unit": "s"
         }
       ],
-      "note": "Only the recovery timing is here. How much damage you can take isn't reachable from this tag. There are three fields that look like it and none of them do anything, see the readme."
+      "note": "Recovery timing only. You can't change how much damage you can take, see the readme for why."
     },
     {
       "id": "assault_rifle",
@@ -79,6 +79,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -161,11 +165,37 @@
           "mirror": 30929,
           "min": 0.0,
           "max": 0.02094395,
-          "step": 5.23599e-05,
+          "step": 5.23599e-5,
           "unit": " rad"
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "08f51e262be8a48a00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 8.5,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 85.0,
+          "step": 0.085
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "08f51e262be8a48a00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 8.5,
+          "min": 0.0,
+          "max": 85.0,
+          "step": 0.085,
+          "derived": true
         }
       ],
-      "note": "Two chunks in the game call themselves the assault rifle. This is the one holding 36 rounds, which is what the game shows. The other holds 60 at a faster rate of fire and I don't know what it's for."
+      "note": "Two chunks call themselves the assault rifle. This is the 36 round one, which is what the game actually uses. No idea what the other is for."
     },
     {
       "id": "smg",
@@ -175,7 +205,6 @@
       "chunk": "d62feebbebfd7eb000000002",
       "container": "pakchunk0-Windows",
       "status": "confirmed",
-      "note": "Chunk id taken from a community SMG mod container, not from a stock extraction.",
       "linked": [
         {
           "source": "total_max",
@@ -185,6 +214,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -250,6 +283,32 @@
           "step": 0.18,
           "unit": "/s",
           "mirror": 30587
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "3359e9a8304de35d00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 7.5,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 75.0,
+          "step": 0.075
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "3359e9a8304de35d00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 7.5,
+          "min": 0.0,
+          "max": 75.0,
+          "step": 0.075,
+          "derived": true
         }
       ]
     },
@@ -270,6 +329,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -335,6 +398,32 @@
           "step": 0.035,
           "unit": "/s",
           "mirror": 30328
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "6d78b216566666fe00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 23.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 230,
+          "step": 0.23
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "6d78b216566666fe00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 23.0,
+          "min": 0.0,
+          "max": 230,
+          "step": 0.23,
+          "derived": true
         }
       ]
     },
@@ -355,6 +444,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -420,6 +513,32 @@
           "step": 0.04,
           "unit": "/s",
           "mirror": 30046
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "b0056ab1ff3b3b8300000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 18.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 180,
+          "step": 0.18
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "b0056ab1ff3b3b8300000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 18.0,
+          "min": 0.0,
+          "max": 180,
+          "step": 0.18,
+          "derived": true
         }
       ]
     },
@@ -431,7 +550,7 @@
       "chunk": "01786f24495b96f000000002",
       "container": "pakchunk0-Windows",
       "status": "confirmed",
-      "note": "The beam drains 'age' rather than ammo. Stock 0.0013 per round gives roughly 770 shots.",
+      "note": "Drains battery instead of ammo. Stock gets you about 770 shots.",
       "fields": [
         {
           "key": "campaign_age",
@@ -442,7 +561,7 @@
           "stock": 0.0013,
           "min": 0,
           "max": 0.0026,
-          "step": 1e-05,
+          "step": 1e-5,
           "unit": "",
           "mirror": 30539
         },
@@ -457,6 +576,38 @@
           "max": 0.075,
           "step": 0.0005,
           "unit": ""
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "38795abdcbd0b51a00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 7.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 70,
+          "step": 0.07
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "38795abdcbd0b51a00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 7.0,
+          "min": 0.0,
+          "max": 70,
+          "step": 0.07,
+          "derived": true
+        }
+      ],
+      "linked": [
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ]
     },
@@ -477,6 +628,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -543,6 +698,32 @@
           "step": 0.15,
           "unit": "/s",
           "mirror": 29830
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "aa6f7b0c1f1339aa00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 11.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 110,
+          "step": 0.11
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "aa6f7b0c1f1339aa00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 11.0,
+          "min": 0.0,
+          "max": 110,
+          "step": 0.11,
+          "derived": true
         }
       ]
     },
@@ -563,6 +744,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -628,6 +813,32 @@
           "step": 0.08,
           "unit": "/s",
           "mirror": 29824
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "ed796fa366423ba200000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 14.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 140,
+          "step": 0.14
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "ed796fa366423ba200000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 14.0,
+          "min": 0.0,
+          "max": 140,
+          "step": 0.14,
+          "derived": true
         }
       ]
     },
@@ -697,6 +908,31 @@
           "type": "u16",
           "stock": 1,
           "locked": true
+        },
+        {
+          "key": "damage",
+          "label": "Damage up close",
+          "help": "Damage value at point blank, before campaign damage scaling takes effect.",
+          "chunk": "549173506a981c3100000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 18.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 180,
+          "step": 0.18
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage at range",
+          "help": "Damage at a distance, before campaign damage scaling takes effect.",
+          "chunk": "549173506a981c3100000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 8.0,
+          "min": 0.0,
+          "max": 80,
+          "step": 0.08
         }
       ]
     },
@@ -789,6 +1025,10 @@
         {
           "source": "magazine",
           "target": "rounds_reloaded"
+        },
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ],
       "fields": [
@@ -865,6 +1105,32 @@
           "max": 40,
           "step": 0.1,
           "unit": "/s"
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "09144a05471a893200000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 6.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 60,
+          "step": 0.06
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "09144a05471a893200000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 6.0,
+          "min": 0.0,
+          "max": 60,
+          "step": 0.06,
+          "derived": true
         }
       ]
     },
@@ -937,6 +1203,31 @@
           "type": "u16",
           "stock": 2,
           "derived": true
+        },
+        {
+          "key": "damage",
+          "label": "Damage at the centre",
+          "help": "Damage at the middle of the blast, before campaign damage scaling takes effect.",
+          "chunk": "96c4eea64e30699c00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 240.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 2400,
+          "step": 2.4
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage at the edge",
+          "help": "Damage at the outside of the blast, before campaign damage scaling takes effect.",
+          "chunk": "96c4eea64e30699c00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 80.0,
+          "min": 0.0,
+          "max": 800,
+          "step": 0.8
         }
       ]
     },
@@ -1009,6 +1300,31 @@
           "type": "u16",
           "stock": 4,
           "derived": true
+        },
+        {
+          "key": "damage",
+          "label": "Damage up close",
+          "help": "Damage value at point blank, before campaign damage scaling takes effect.",
+          "chunk": "bdb86a60bab3444b00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 101.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 1010,
+          "step": 1.01
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage at range",
+          "help": "Damage at a distance, before campaign damage scaling takes effect.",
+          "chunk": "bdb86a60bab3444b00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 0.0,
+          "min": 0.0,
+          "max": 10,
+          "step": 0.01
         }
       ]
     },
@@ -1030,7 +1346,7 @@
           "stock": 0.005,
           "min": 0.0,
           "max": 0.02,
-          "step": 5e-05,
+          "step": 5e-5,
           "mirror": 31913
         },
         {
@@ -1067,6 +1383,31 @@
           "max": 40,
           "step": 0.1,
           "unit": "/s"
+        },
+        {
+          "key": "damage",
+          "label": "Damage up close",
+          "help": "Damage value at point blank, before campaign damage scaling takes effect.",
+          "chunk": "73860eb21fc8ca1a00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 11.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 110,
+          "step": 0.11
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage at range",
+          "help": "Damage at a distance, before campaign damage scaling takes effect.",
+          "chunk": "73860eb21fc8ca1a00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 7.0,
+          "min": 0.0,
+          "max": 70,
+          "step": 0.07
         }
       ]
     },
@@ -1078,7 +1419,7 @@
       "chunk": "b5dcca7b1661bf5200000002",
       "container": "pakchunk0-Windows",
       "status": "derived",
-      "note": "The red one the Brutes carry. Its own tag, separate from the normal plasma rifle, and it references plasma_rifle_red assets throughout.",
+      "note": "The red one the Brutes carry. Separate tag, references plasma_rifle_red all the way through.",
       "fields": [
         {
           "key": "campaign_age",
@@ -1089,7 +1430,7 @@
           "stock": 0.0025,
           "min": 0.0,
           "max": 0.01,
-          "step": 2.5e-05,
+          "step": 2.5e-5,
           "mirror": 31926
         },
         {
@@ -1126,6 +1467,31 @@
           "max": 48,
           "step": 0.12,
           "unit": "/s"
+        },
+        {
+          "key": "damage",
+          "label": "Damage up close",
+          "help": "Damage value at point blank, before campaign damage scaling takes effect.",
+          "chunk": "d52e0d874a66584900000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 14.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 140,
+          "step": 0.14
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage at range",
+          "help": "Damage at a distance, before campaign damage scaling takes effect.",
+          "chunk": "d52e0d874a66584900000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 9.0,
+          "min": 0.0,
+          "max": 90,
+          "step": 0.09
         }
       ]
     },
@@ -1160,6 +1526,38 @@
           "min": 0.0,
           "max": 2.6,
           "step": 0.0065
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "6367ddd8d3abb6c000000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 90.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 900,
+          "step": 0.9
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "6367ddd8d3abb6c000000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 90.0,
+          "min": 0.0,
+          "max": 900,
+          "step": 0.9,
+          "derived": true
+        }
+      ],
+      "linked": [
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ]
     },
@@ -1171,7 +1569,7 @@
       "chunk": "ce271d38312e3a3f00000002",
       "container": "pakchunk0-Windows",
       "status": "derived",
-      "note": "One barrel per trigger, so two sets of values. They share the same battery and the same heat bar, so making one cheap and the other expensive will behave oddly. Nothing stops you.",
+      "note": "Two triggers, so two barrels and two sets of numbers. They share a battery and a heat bar, so making one cheap and the other expensive gets strange.",
       "fields": [
         {
           "key": "campaign_age",
@@ -1182,7 +1580,7 @@
           "stock": 0.005,
           "min": 0.0,
           "max": 0.02,
-          "step": 5e-05,
+          "step": 5e-5,
           "mirror": 33962
         },
         {
@@ -1218,6 +1616,38 @@
           "min": 0.0,
           "max": 4.0,
           "step": 0.01
+        },
+        {
+          "key": "damage",
+          "label": "Damage",
+          "help": "Damage value before campaign damage scaling takes effect.",
+          "chunk": "32ba38058d664c9a00000002",
+          "off": 4389,
+          "type": "f32",
+          "stock": 16.0,
+          "mirror": 4393,
+          "min": 0.0,
+          "max": 160,
+          "step": 0.16
+        },
+        {
+          "key": "damage_floor",
+          "label": "Damage (derived)",
+          "help": "Kept level with the one above.",
+          "chunk": "32ba38058d664c9a00000002",
+          "off": 4385,
+          "type": "f32",
+          "stock": 16.0,
+          "min": 0.0,
+          "max": 160,
+          "step": 0.16,
+          "derived": true
+        }
+      ],
+      "linked": [
+        {
+          "source": "damage",
+          "target": "damage_floor"
         }
       ]
     },
@@ -1229,7 +1659,7 @@
       "chunk": "6104971f0ca5be7800000002",
       "container": "pakchunk0-Windows",
       "status": "derived",
-      "note": "This one edits the game's globals tag rather than a weapon, so the mod it builds is a lot bigger than the others. Which entry is frag and which is plasma I'm not certain of, frag is probably first. Set them to different numbers and you'll find out quickly.",
+      "note": "Edits the globals tag instead of a weapon, so this mod comes out about a megabyte (the others are thirty kilobytes). Not certain which entry is frag, probably the first. Set them different and you'll know in about ten seconds.",
       "fields": [
         {
           "key": "grenade_1",
