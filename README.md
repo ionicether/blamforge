@@ -79,15 +79,10 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 
 Plus the Chief's shield and health recovery timing and rate.
 
-**Ammo** is magazine size, the reserve you can carry, and how much comes with a weapon placed in the level. **Battery** is what each shot drains, on the weapons that have one instead of a magazine. **Heat** is how fast it overheats.
+**Ammo** is magazine size, the reserve you can carry, and how much comes with a weapon placed in the level. 
+**Battery** is what each shot drains, on the weapons that have one instead of a magazine. 
+**Heat** is how fast it overheats.
 
-The assault rifle, SMG, sentinel beam, and the Chief's recharge timing have all been tested in game. Everything else lines up in the files but I haven't played it, and damage is new enough that only the assault rifle has been fired in anger.
-
-Stock battery values work out to somewhere between 20 shots for the beam rifle and 770 for the sentinel beam.
-
-The energy sword isn't in here yet.
-
-> There are tags in the game files for weapons that aren't in the campaign (because apparently they worked off of a build of Halo: Reach) at all, like a DMR, a spartan laser, and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
 
 ## About rate of fire
 
