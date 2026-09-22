@@ -75,8 +75,9 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 | Plasma rifle       |   ✓    |      |    ✓    |  ✓   |     ✓     |        | fire rate ramps up, damage falls off      |
 | Spiker             |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
 | Sentinel beam      |   ✓    |      |    ✓    |  ✓   |           |        |                                           |
+| Grenades           |        |  ✓   |         |      |           |        | how many of each type you can carry       |
 
-Plus the Chief's shield and health recovery timing, and how many grenades of each type you can carry.
+Plus the Chief's shield and health recovery timing and rate.
 
 **Ammo** is magazine size, the reserve you can carry, and how much comes with a weapon placed in the level. **Battery** is what each shot drains, on the weapons that have one instead of a magazine. **Heat** is how fast it overheats.
 
