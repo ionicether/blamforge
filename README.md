@@ -80,7 +80,9 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 Plus the Chief's shield and health recovery timing and rate.
 
 **Ammo** is magazine size, the reserve you can carry, and how much comes with a weapon placed in the level. 
+
 **Battery** is what each shot drains, on the weapons that have one instead of a magazine. 
+
 **Heat** is how fast it overheats.
 
 
