@@ -8,7 +8,7 @@ Sliders for Halo: Campaign Evolved. Magazine sizes, energy weapon drain/heat, sh
 
 **Python.** That's the only thing you have to install.
 
-Blamforge also needs (and automatically downloads) [retoc](https://github.com/trumank/retoc), which does the actual reading and writing of the game's containers. Blamforge offers to download it the first time you run it. It tells you exactly what file it's fetching and from where, puts it in its own folder, and checks it runs before carrying on.
+>Blamforge also needs (but downloads it itself) [retoc](https://github.com/trumank/retoc), which does the actual reading and writing of the game's containers. **You don't have to go and get it**. Blamforge offers to download it the first time you run it, tells you exactly what file it's fetching and from where, puts it in its own folder, and checks it runs before carrying on.
 
 Blamforge itself is the offsets (which took a while to find) and a web UI to wrangle them with.
 
@@ -22,9 +22,9 @@ winget install --id Python.Python.3 --source winget --accept-package-agreements 
 
 **Close PowerShell and open it again** afterwards, or it won't be found.
 
->If `winget` isn't recognised, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
+> If `winget` isn't recognized, your App Installer is out of date. Get Python from python.org instead and tick "Add Python to PATH" during the install.
 
->If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings -> Apps -> Advanced app settings -> App execution aliases -> turn off the `python.exe` and `python3.exe` entries.
+> If typing `python` opens the Microsoft Store instead of running anything, that's Windows' app execution aliases getting in the way. Settings -> Apps -> Advanced app settings -> App execution aliases -> turn off the `python.exe` and `python3.exe` entries.
 
 **Linux.** Usually already there. Check:
 
@@ -57,27 +57,40 @@ Launch the game and enjoy. Blamforge doesn't need to be running.
 
 ## What's in it
 
-| | | |
-|---|---|---|
-| Master Chief | shield and health recovery timing | tested |
-| Assault rifle | mag, reserve, set-dressing pickup ammo, RPM, spread | tested |
-| SMG | mag, reserve, set-dressing pickup ammo, rate of fire | tested |
-| Sentinel beam | battery drain, heat | tested |
-| BR, magnum, needle rifle, needler, spiker | mag, reserve, set-dressing pickup ammo, rate of fire | offsets check out, haven't played them |
-| Shotgun, sniper, rockets, fuel rod | mag, reserve, set-dressing pickup ammo | same |
-| Plasma rifle, brute plasma rifle | battery per shot, heat per shot, rate of fire | same |
-| Plasma pistol, beam rifle | battery per shot, heat per shot | same |
-| Grenades | how many of each you can carry | same |
+|                    | Damage | Ammo | Battery | Heat | Fire rate | Spread |                                           |
+| ------------------ | :----: | :--: | :-----: | :--: | :-------: | :----: | ----------------------------------------- |
+| Assault rifle      |   ✓    |  ✓   |         |      |     ✓     |   ✓    |                                           |
+| Battle rifle       |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
+| Magnum             |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
+| Rocket launcher    |   ✓    |  ✓   |         |      |           |        | damage is center and edge of the blast    |
+| Shotgun            |   ✓    |  ✓   |         |      |           |        | damage falls off with distance            |
+| SMG                |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
+| Sniper rifle       |   ✓    |  ✓   |         |      |           |        | damage falls off with distance            |
+| Beam rifle         |   ✓    |      |    ✓    |  ✓   |           |        |                                           |
+| Brute plasma rifle |   ✓    |      |    ✓    |  ✓   |     ✓     |        | fire rate ramps up, damage falls off      |
+| Fuel rod cannon    |        |  ✓   |         |      |           |        | never found its damage                    |
+| Needle rifle       |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
+| Needler            |   ✓    |  ✓   |         |      |     ✓     |        | fire rate ramps up                        |
+| Plasma pistol      |   ✓    |      |    ✓    |  ✓   |           |        | charged shot has its own battery and heat |
+| Plasma rifle       |   ✓    |      |    ✓    |  ✓   |     ✓     |        | fire rate ramps up, damage falls off      |
+| Spiker             |   ✓    |  ✓   |         |      |     ✓     |        |                                           |
+| Sentinel beam      |   ✓    |      |    ✓    |  ✓   |           |        |                                           |
 
-Battery weapons have no magazine. A shot costs a fraction of the battery, and stock values work out to somewhere between 20 shots for the beam rifle and 770 for the sentinel beam. The plasma pistol has two sets because it has two triggers.
+Plus the Chief's shield and health recovery timing, and how many grenades of each type you can carry.
 
-Still missing: energy sword, which has neither a magazine nor a battery, so there may not be anything to change.
+**Ammo** is magazine size, the reserve you can carry, and how much comes with a weapon placed in the level. **Battery** is what each shot drains, on the weapons that have one instead of a magazine. **Heat** is how fast it overheats.
 
->There are tags in the game files for weapons that aren't in the campaign (because apparently they worked off of a build of Halo: Reach) at all, like a DMR, a spartan laser, and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
+The assault rifle, SMG, sentinel beam, and the Chief's recharge timing have all been tested in game. Everything else lines up in the files but I haven't played it, and damage is new enough that only the assault rifle has been fired in anger.
+
+Stock battery values work out to somewhere between 20 shots for the beam rifle and 770 for the sentinel beam.
+
+The energy sword isn't in here yet.
+
+> There are tags in the game files for weapons that aren't in the campaign (because apparently they worked off of a build of Halo: Reach) at all, like a DMR, a spartan laser, and a focus rifle. I had six of them in here because they show up in the game data and I hadn't played the bonus missions, so I couldn't say for certain they weren't tucked away somewhere. They're not. Halo Studios publish the weapon list and none of them are on it.
 
 ## About rate of fire
 
-The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time. 
+The AR's rate of fire reads 12 in the tag. The devs say (in [their blurb](https://store.steampowered.com/news/app/2806050/view/669499588924673054) where they talk about how they fixed it in the latest update) the intended rate is 10 rounds a second. Higher is faster, I checked by setting both 1 and 48. What the number measures, not a clue at this time.
 It will probably take someone smarter than me to figure it out.
 
 ## Health and shield amounts
@@ -88,7 +101,7 @@ You can't change them. Three fields in the tag look like they should do it and n
 
 Some weapons do less damage the further away you are, so those get two sliders, one for point blank and one for range. The rest do the same damage at any distance and get one.
 
-For scale, the Chief has 70 to lose and 45 of that is body. A magnum round is 23, an assault rifle round is 8.5, a rocket is 240 at the centre.
+For a sense of scale, a magnum round is 23, an assault rifle round is 8.5, and a rocket is 240 at the center of the blast.
 
 ## Co-op
 
